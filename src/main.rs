@@ -15,17 +15,23 @@ fn write_color(pixel_color: color) {
     );
 }
 
-fn hit_sphere(center: point3, radius: f32, r: Ray) -> bool {
+fn hit_sphere(center: point3, radius: f32, r: Ray) -> f32 {
     let oc = r.origin() - center;
     let a = dot(r.direction(), r.direction());
     let b = 2.0 * dot(oc, r.direction());
     let c = dot(oc, oc) - radius * radius;
     let discrimninant = b * b - 4. * a * c;
-    discrimninant > 0.
+    if discrimninant < 0. {
+        return -1.;
+    } else {
+        return (-b - discrimninant.sqrt()) / (2. * a);
+    }
 }
 fn ray_color(r: Ray) -> color {
-    if hit_sphere(point3::from(0., 0., -1.), 0.5, r) {
-        return color::from(0., 0., 0.);
+    let t = hit_sphere(point3::from(0., 0., -1.), 0.5, r);
+    if t > 0. {
+        let N = unit_vector(r.at(t) - Vec3::from(0., 0., -1.));
+        return color::from(N.x() + 1., N.y() + 1., N.z() + 1.) * 0.5;
     }
     let unit_direction = unit_vector(r.direction());
     let t = 0.5 * (unit_direction.y() + 1.0);
@@ -34,7 +40,7 @@ fn ray_color(r: Ray) -> color {
 
 fn main() {
     // Image
-    const ASPECT_RATIO: f32 = 16.0 / 9.0;
+    const ASPECT_RATIO: f32 = 32.0 / 18.0;
     const IMAGE_WIDTH: i32 = 256;
     const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
 
