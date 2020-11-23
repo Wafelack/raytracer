@@ -76,14 +76,12 @@ impl ops::Div<f32> for Vec3 {
     type Output = Self;
 
     fn div(self, t: f32) -> Self {
-        self * 1./t
+        self * (1./t)
     }
 }
 
 pub fn dot(u: Vec3, v: Vec3) -> f32 {
-    u.e[0] * v.e[0]
-         + u.e[1] * v.e[1]
-         + u.e[2] * v.e[2]
+    u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2]
 }
 pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
     Vec3::from(u.e[1] * v.e[2] - u.e[2] * v.e[1],

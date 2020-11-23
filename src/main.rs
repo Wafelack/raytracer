@@ -12,7 +12,7 @@ fn write_color(pixel_color: color) {
 fn ray_color(r: Ray) -> color {
     let unit_direction = unit_vector(r.direction());
     let t = 0.5*(unit_direction.y() + 1.0);
-    color::from(1.0, 1.0, 1.0)*(1.0-t)
+    color::from(1.0, 1.0, 1.0)*(1.0-t) + color::from(0.5,0.7,1.0)*t
 }
 
 fn main() {
@@ -31,17 +31,17 @@ fn main() {
     let horizontal = Vec3::from(viewport_width,0.,0.);
     let vertical = Vec3::from(0., viewport_height, 0.);
     let lower_left_corner = origin - horizontal/2. - vertical/2. - Vec3::from(0.,0., focal_length);
-
     // Render
     println!("P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT);
 
     for j in (0..IMAGE_HEIGHT).rev() {
         eprint!("\rScanlines remaining: {} ", j);
+        
         io::stdout().flush().unwrap();
         for i in 0..IMAGE_WIDTH {
             let u = i as f32 / ((IMAGE_WIDTH-1) as f32);
             let v = j as f32 / ((IMAGE_HEIGHT-1) as f32);
-            let r =Ray::new(origin, lower_left_corner + horizontal*u + vertical*v - origin);
+            let r = Ray::new(origin, lower_left_corner + horizontal*u + vertical*v - origin);
             let pixel_color = ray_color(r);
             write_color(pixel_color);
         }
