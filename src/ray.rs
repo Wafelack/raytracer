@@ -1,20 +1,20 @@
-use vector3d::*;
+use crate::vec3::*;
 
-struct Ray {
-    pub orig: Vector3d<f32>,
-    pub dir: Vector3d<f32>
+pub struct Ray {
+    pub orig: point3,
+    pub dir: Vec3
 }
 impl Ray {
-    pub fn new(origin: Vector3d<f32>, direction: Vector3d<f32>) -> Self {
+    pub fn new(origin: point3, direction: Vec3) -> Self {
         Ray { orig: origin, dir: direction}
     }
-    pub fn origin(&self) -> Vector3d<f32> {
+    pub fn origin(&self) -> point3 {
         self.orig
     }
-    pub fn direction(&self) -> Vector3d<f32> {
+    pub fn direction(&self) -> Vec3 {
         self.dir
     }
-    pub fn at(&self, t: f32) -> Vector3d<f32> {
+    pub fn at(&self, t: f32) -> point3 {
         self.orig + self.dir * t
     }
 }
