@@ -1,7 +1,14 @@
+use std::rc::Rc;
 use std::{io, io::Write};
 
 mod vec3;
 use vec3::*;
+
+mod utils;
+use utils::*;
+
+mod objects;
+use objects::{hittable::*, hittable_list::*, sphere::*};
 
 mod ray;
 use ray::*;
@@ -27,22 +34,30 @@ fn hit_sphere(center: point3, radius: f32, r: Ray) -> f32 {
         return (-half_b - discrimninant.sqrt()) / a;
     }
 }
-fn ray_color(r: Ray) -> color {
-    let t = hit_sphere(point3::from(0., 0., -1.), 0.5, r);
-    if t > 0. {
-        let N = unit_vector(r.at(t) - Vec3::from(0., 0., -1.));
-        return color::from(N.x() + 1., N.y() + 1., N.z() + 1.) * 0.5;
+fn ray_color(r: Ray, world: &impl Hittable) -> color {
+    let mut rec = HitRecord::void();
+
+    if world.hit(r, 0., f32::INFINITY, &mut rec) {
+        return (rec.normal + color::from(1., 1., 1.)) * 0.5;
     }
     let unit_direction = unit_vector(r.direction());
-    let t = 0.5 * (unit_direction.y() + 1.0);
-    color::from(1.0, 1.0, 1.0) * (1.0 - t) + color::from(0.5, 0.7, 1.0) * t
+
+    let t = (unit_direction.y() + 1.) * 0.5;
+
+    color::from(1., 1., 1.) * (1. - t) + color::from(0.5, 0.7, 1.) * t
 }
 
 fn main() {
     // Image
-    const ASPECT_RATIO: f32 = 160.0 / 90.0;
-    const IMAGE_WIDTH: i32 = 256;
+    const ASPECT_RATIO: f32 = 16.0 / 9.0;
+    const IMAGE_WIDTH: i32 = 2048;
     const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
+
+    // World
+    let mut world = HittableList::new();
+    world.add(Rc::new(Sphere::new(point3::from(-0.6, 0., -1.), 0.5)));
+    world.add(Rc::new(Sphere::new(point3::from(0.6, 0., -1.), 0.5)));
+    world.add(Rc::new(Sphere::new(point3::from(0., -100.5, -1.), 100.)));
 
     // Camera
     let viewport_height: f32 = 2.0;
@@ -67,7 +82,7 @@ fn main() {
                 origin,
                 lower_left_corner + horizontal * u + vertical * v - origin,
             );
-            let pixel_color = ray_color(r);
+            let pixel_color = ray_color(r, &world);
             write_color(pixel_color);
         }
     }
