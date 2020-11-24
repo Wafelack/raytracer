@@ -1,37 +1,29 @@
 use std::rc::Rc;
 use std::{io, io::Write};
+
 mod camera;
-use camera::Camera;
 mod vec3;
-use vec3::*;
-mod colors;
-use colors::write_color;
+mod colors; 
 mod objects;
 mod utils;
+mod ray;
+
+use camera::Camera;
+use vec3::*;
+use colors::write_color;
 use objects::{hittable::*, hittable_list::*, sphere::*};
 use utils::*;
-mod ray;
 use ray::*;
 
-fn ray_color(r: Ray, world: &impl Hittable) -> color {
-    let mut rec = HitRecord::void();
 
-    if world.hit(r, 0., f32::INFINITY, &mut rec) {
-        return (rec.normal + color::from(1., 1., 1.)) * 0.5;
-    }
-    let unit_direction = unit_vector(r.direction());
-
-    let t = (unit_direction.y() + 1.) * 0.5;
-
-    color::from(1., 1., 1.) * (1. - t) + color::from(0.5, 0.7, 1.) * t
-}
 
 fn main() {
     // Image
     const ASPECT_RATIO: f32 = 16.0 / 9.0;
-    const IMAGE_WIDTH: i32 = 400;
+    const IMAGE_WIDTH: i32 = 512;
     const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
-    const SAMPLES_PER_PIXEL: i32 = 8;
+    const SAMPLES_PER_PIXEL: i32 = 9;
+    const MAX_DEPTH: i32 = 50;
 
     // World
     let mut world = HittableList::new();
@@ -53,7 +45,7 @@ fn main() {
                 let u = (i as f32 + random_double(0., 1.)) / ((IMAGE_WIDTH - 1) as f32);
                 let v = (j as f32 + random_double(0., 1.)) / ((IMAGE_HEIGHT - 1) as f32);
                 let r = cam.get_ray(u, v);
-                pixel_color.add(ray_color(r, &world));
+                pixel_color.add(ray_color(r, &world, MAX_DEPTH));
             }
             write_color(pixel_color, SAMPLES_PER_PIXEL);
         }

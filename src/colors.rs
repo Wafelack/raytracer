@@ -8,11 +8,10 @@ pub fn write_color(pixel_color: color, samples_per_pixel: i32) {
 
     // Divide the color by the samples amount
     let scale = 1. / samples_per_pixel as f32;
-
-    r *= scale;
-    g *= scale;
-    b *= scale;
-
+     r = (scale * r).sqrt();
+     g = (scale * g).sqrt();
+     b = (scale * b).sqrt();
+     
     println!(
         "{} {} {}",
         (256. * clamp(r, 0., 0.999)) as i32,
