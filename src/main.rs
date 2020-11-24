@@ -1,39 +1,18 @@
 use std::rc::Rc;
 use std::{io, io::Write};
-
+mod camera;
+use camera::Camera;
 mod vec3;
 use vec3::*;
-
-mod utils;
-use utils::*;
-
+mod colors;
+use colors::write_color;
 mod objects;
+mod utils;
 use objects::{hittable::*, hittable_list::*, sphere::*};
-
+use utils::*;
 mod ray;
 use ray::*;
 
-fn write_color(pixel_color: color) {
-    println!(
-        "{} {} {}",
-        (pixel_color.x() * 255.99) as i32,
-        (pixel_color.y() * 255.99) as i32,
-        (pixel_color.z() * 255.99) as i32
-    );
-}
-
-fn hit_sphere(center: point3, radius: f32, r: Ray) -> f32 {
-    let oc = r.origin() - center;
-    let a = r.direction().len_squared();
-    let half_b = dot(oc, r.direction());
-    let c = oc.len_squared() - radius * radius;
-    let discrimninant = half_b * half_b - a * c;
-    if discrimninant < 0. {
-        return -1.;
-    } else {
-        return (-half_b - discrimninant.sqrt()) / a;
-    }
-}
 fn ray_color(r: Ray, world: &impl Hittable) -> color {
     let mut rec = HitRecord::void();
 
@@ -50,25 +29,18 @@ fn ray_color(r: Ray, world: &impl Hittable) -> color {
 fn main() {
     // Image
     const ASPECT_RATIO: f32 = 16.0 / 9.0;
-    const IMAGE_WIDTH: i32 = 2048;
+    const IMAGE_WIDTH: i32 = 400;
     const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
+    const SAMPLES_PER_PIXEL: i32 = 8;
 
     // World
     let mut world = HittableList::new();
-    world.add(Rc::new(Sphere::new(point3::from(-0.6, 0., -1.), 0.5)));
-    world.add(Rc::new(Sphere::new(point3::from(0.6, 0., -1.), 0.5)));
+    world.add(Rc::new(Sphere::new(point3::from(0., 0., -1.), 0.5)));
     world.add(Rc::new(Sphere::new(point3::from(0., -100.5, -1.), 100.)));
 
     // Camera
-    let viewport_height: f32 = 2.0;
-    let viewport_width = ASPECT_RATIO * viewport_height;
-    let focal_length: f32 = 1.0;
+    let cam = Camera::new();
 
-    let origin = point3::from(0., 0., 0.);
-    let horizontal = Vec3::from(viewport_width, 0., 0.);
-    let vertical = Vec3::from(0., viewport_height, 0.);
-    let lower_left_corner =
-        origin - horizontal / 2. - vertical / 2. - Vec3::from(0., 0., focal_length);
     // Render
     println!("P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT);
 
@@ -76,14 +48,14 @@ fn main() {
         eprint!("\rScanlines remaining: {} ", j);
         io::stdout().flush().unwrap();
         for i in 0..IMAGE_WIDTH {
-            let u = i as f32 / ((IMAGE_WIDTH - 1) as f32);
-            let v = j as f32 / ((IMAGE_HEIGHT - 1) as f32);
-            let r = Ray::new(
-                origin,
-                lower_left_corner + horizontal * u + vertical * v - origin,
-            );
-            let pixel_color = ray_color(r, &world);
-            write_color(pixel_color);
+            let mut pixel_color = color::new();
+            for _s in 0..SAMPLES_PER_PIXEL {
+                let u = (i as f32 + random_double(0., 1.)) / ((IMAGE_WIDTH - 1) as f32);
+                let v = (j as f32 + random_double(0., 1.)) / ((IMAGE_HEIGHT - 1) as f32);
+                let r = cam.get_ray(u, v);
+                pixel_color.add(ray_color(r, &world));
+            }
+            write_color(pixel_color, SAMPLES_PER_PIXEL);
         }
     }
     eprint!("\nDone\n");
