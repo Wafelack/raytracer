@@ -26,6 +26,22 @@ impl Vec3 {
             return p;
         }
     }
+    pub fn random_unit_vector() -> Self {
+        unit_vector(Self::random_in_unit_sphere())
+    }
+    pub fn random_in_hemisphere(normal: Vec3) -> Self {
+        let in_unit_sphere = Self::random_in_unit_sphere();
+        if dot(in_unit_sphere, normal) > 0. {
+            return in_unit_sphere;
+        } else {
+            return in_unit_sphere.inv();
+        }
+    }
+
+    pub fn near_zero(&self) -> bool {
+        let s:f32 = 1e-8;
+        (self.e[0].abs() < s) && (self.e[1].abs() < s) && (self.e[2].abs() < s)
+    }
 
     pub fn x(&self) -> f32 {
         self.e[0]
@@ -80,6 +96,14 @@ impl ops::Sub for Vec3 {
     }
 }
 
+impl ops::Mul for Vec3 {
+    type Output = Self;
+
+    fn mul(self, v: Self) -> Self {
+        Vec3::from(self.e[0] * v.e[0], self.e[1] * v.e[1], self.e[2] * v.e[2])
+    }
+}
+
 impl ops::Mul<f32> for Vec3 {
     type Output = Self;
 
@@ -106,6 +130,9 @@ pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
 }
 pub fn unit_vector(v: Vec3) -> Vec3 {
     v / v.len()
+}
+pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
+    v -  n *(2. * dot(v,n))
 }
 
 pub type point3 = Vec3; 

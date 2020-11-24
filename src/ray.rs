@@ -32,8 +32,13 @@ pub fn ray_color(r: Ray, world: &impl Hittable, depth: i32) -> color {
     }
 
     if world.hit(r, 0.001, f32::INFINITY, &mut rec) {
-        let target = rec.p + rec.normal + color::random_in_unit_sphere();
-        return ray_color(Ray::new(rec.p, target - rec.p), world, depth-1) * 0.5;
+        let mut scattered= Ray::new(point3::new(),Vec3::new());
+        let mut attenuation = color::new();
+        if rec.mat_ptr.scatter(r, rec.clone(), &mut attenuation, &mut scattered) {
+            return attenuation * ray_color(scattered, world, depth - 1);
+        }
+        return color::from(0.,0.,0.);
+
     }
     let unit_direction = unit_vector(r.direction());
 

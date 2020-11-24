@@ -11,9 +11,9 @@ pub fn write_color(pixel_color: color, samples_per_pixel: i32) {
      r = (scale * r).sqrt();
      g = (scale * g).sqrt();
      b = (scale * b).sqrt();
-     
+
     println!(
-        "{} {} {}",
+            "{} {} {}",
         (256. * clamp(r, 0., 0.999)) as i32,
         (256. * clamp(g, 0., 0.999)) as i32,
         (256. * clamp(b, 0., 0.999)) as i32

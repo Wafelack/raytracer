@@ -7,6 +7,7 @@ mod colors;
 mod objects;
 mod utils;
 mod ray;
+mod material;
 
 use camera::Camera;
 use vec3::*;
@@ -14,22 +15,32 @@ use colors::write_color;
 use objects::{hittable::*, hittable_list::*, sphere::*};
 use utils::*;
 use ray::*;
+use material::material::*;
 
 
 
 fn main() {
     // Image
     const ASPECT_RATIO: f32 = 16.0 / 9.0;
-    const IMAGE_WIDTH: i32 = 512;
+    const IMAGE_WIDTH: i32 = 1024;
     const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
-    const SAMPLES_PER_PIXEL: i32 = 9;
+    const SAMPLES_PER_PIXEL: i32 = 8;
     const MAX_DEPTH: i32 = 50;
 
     // World
     let mut world = HittableList::new();
-    world.add(Rc::new(Sphere::new(point3::from(0., 0., -1.), 0.5)));
-    world.add(Rc::new(Sphere::new(point3::from(0., -100.5, -1.), 100.)));
+    
+    let material_ground = Rc::new(Lambertian::from(color::from(0.8,0.8,0.0)));
+    let material_center = Rc::new(Lambertian::from(color::from(0.7,0.3,0.3)));
+    let material_left = Rc::new(Metal::from(color::from(0.8,0.8,0.8)));
+    let material_right = Rc::new(Metal::from(color::from(0.8,0.6,0.2)));
 
+    world.add(Rc::new(Sphere::new(point3::from(0.,-100.5,-1.), 100., material_ground)));
+    world.add(Rc::new(Sphere::new(point3::from(0.,0.0,-1.), 0.5, material_center)));
+    world.add(Rc::new(Sphere::new(point3::from(-1.,0.0,-1.), 0.5, material_left)));
+    world.add(Rc::new(Sphere::new(point3::from(1.,0.0,-1.), 0.5, material_right)));
+
+    
     // Camera
     let cam = Camera::new();
 
@@ -37,7 +48,7 @@ fn main() {
     println!("P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT);
 
     for j in (0..IMAGE_HEIGHT).rev() {
-        eprint!("\rScanlines remaining: {} ", j);
+        eprint!("\rScanlines remaining: {}/{}", j, IMAGE_HEIGHT);
         io::stdout().flush().unwrap();
         for i in 0..IMAGE_WIDTH {
             let mut pixel_color = color::new();
