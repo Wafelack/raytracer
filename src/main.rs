@@ -42,7 +42,15 @@ fn main() {
     world.add(Rc::new(Sphere::new(point3::from(-1.,0.,-1.), -0.45, Rc::clone(&material_left))));
     world.add(Rc::new(Sphere::new(point3::from(1.,0.,-1.), 0.5, material_right)));
     // Camera
-    let cam = Camera::new(point3::from(-2.,2.,1.), point3::from(0.,0.,-1.), Vec3::from(0.,1.,0.), 90.0, ASPECT_RATIO);
+
+    let lookfrom = point3::from(3.,3.,2.);
+    let lookat = point3::from(0.,0.,-1.);
+    let vup = Vec3::from(0.,1.,0.);
+    let dist_to_focus: f32 = (lookfrom - lookat).len();
+    let aperture: f32 = 2.;
+
+
+    let cam = Camera::new(lookfrom, lookat, vup, 20.0, ASPECT_RATIO, aperture, dist_to_focus);
 
     // Render
     println!("P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT);

@@ -38,6 +38,15 @@ impl Vec3 {
             return in_unit_sphere.inv();
         }
     }
+    pub fn random_in_unit_disk() -> Self{
+        loop {
+            let p = Self::from(random_double(-1., 1.),random_double(-1., 1.), 0.);
+            if p.len_squared() >= 1. { 
+                continue; 
+            }
+            return p;
+        }
+    }
 
     pub fn near_zero(&self) -> bool {
         let s:f32 = 1e-8;
