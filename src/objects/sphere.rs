@@ -1,6 +1,5 @@
 use crate::{objects::hittable::*, ray::*, vec3::*, material::material::Material};
 use std::rc::Rc;
-
 pub struct Sphere {
     pub center: point3,
     pub radius: f32,

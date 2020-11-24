@@ -28,27 +28,27 @@ fn main() {
     const MAX_DEPTH: i32 = 50;
 
     // World
+
     let mut world = HittableList::new();
-    
-    let material_ground = Rc::new(Lambertian::from(color::from(0.8,0.8,0.0)));
-    let material_center = Rc::new(Lambertian::from(color::from(0.7,0.3,0.3)));
-    let material_left = Rc::new(Metal::from(color::from(0.8,0.8,0.8)));
-    let material_right = Rc::new(Metal::from(color::from(0.8,0.6,0.2)));
 
-    world.add(Rc::new(Sphere::new(point3::from(0.,-100.5,-1.), 100., material_ground)));
-    world.add(Rc::new(Sphere::new(point3::from(0.,0.0,-1.), 0.5, material_center)));
-    world.add(Rc::new(Sphere::new(point3::from(-1.,0.0,-1.), 0.5, material_left)));
-    world.add(Rc::new(Sphere::new(point3::from(1.,0.0,-1.), 0.5, material_right)));
+    let material_ground :Rc<dyn Material>= Rc::new(Lambertian::from(color::from(0.8,0.8,0.)));
+    let material_center :Rc<dyn Material>= Rc::new(Lambertian::from(color::from(0.1,0.2,0.5)));
+    let material_left :Rc<dyn Material>= Rc::new(Dielectric::new(1.5));
+    let material_right :Rc<dyn Material>= Rc::new(Metal::from(color::from(0.8, 0.6, 0.2), 0.0));
 
-    
+    world.add(Rc::new(Sphere::new(point3::from(0., -100.5, -1.),100., material_ground)));
+    world.add(Rc::new(Sphere::new(point3::from(0.,0.,-1.), 0.5, material_center)));
+    world.add(Rc::new(Sphere::new(point3::from(-1.,0.,-1.), 0.5, Rc::clone(&material_left))));
+    world.add(Rc::new(Sphere::new(point3::from(-1.,0.,-1.), -0.45, Rc::clone(&material_left))));
+    world.add(Rc::new(Sphere::new(point3::from(1.,0.,-1.), 0.5, material_right)));
     // Camera
-    let cam = Camera::new();
+    let cam = Camera::new(point3::from(-2.,2.,1.), point3::from(0.,0.,-1.), Vec3::from(0.,1.,0.), 90.0, ASPECT_RATIO);
 
     // Render
     println!("P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT);
 
     for j in (0..IMAGE_HEIGHT).rev() {
-        eprint!("\rScanlines remaining: {}/{}", j, IMAGE_HEIGHT);
+        eprint!("\rScanlines remaining: {}/{}            ", j, IMAGE_HEIGHT);
         io::stdout().flush().unwrap();
         for i in 0..IMAGE_WIDTH {
             let mut pixel_color = color::new();

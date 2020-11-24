@@ -1,5 +1,6 @@
 use std::ops;
 use crate::utils::random_double;
+use std::cmp::min;
 
 #[derive(Copy, Clone)]
 pub struct Vec3 {
@@ -134,6 +135,12 @@ pub fn unit_vector(v: Vec3) -> Vec3 {
 pub fn reflect(v: Vec3, n: Vec3) -> Vec3 {
     v -  n *(2. * dot(v,n))
 }
+pub fn refract(uv: Vec3, n: Vec3, etai_over_etat:f32) -> Vec3 {
+    let cos_theta = dot(uv.inv(), n).min(1.);
+    let r_out_perp: Vec3 =  (uv + n*cos_theta) * etai_over_etat;
+    let r_out_parallel: Vec3 = n * -((1.0 - r_out_perp.len_squared()).abs().sqrt());
+    r_out_perp + r_out_parallel
+}  
 
 pub type point3 = Vec3; 
 pub type color = Vec3;
