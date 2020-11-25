@@ -12,7 +12,7 @@ mod material;
 use camera::Camera;
 use vec3::*;
 use colors::write_color;
-use objects::{hittable::*, hittable_list::*, sphere::*};
+use objects::{moving_sphere::*, hittable_list::*, sphere::*};
 use utils::*;
 use ray::*;
 use material::material::*;
@@ -35,7 +35,8 @@ fn random_scene() -> HittableList {
                     // diffuse
                     let albedo = color::random(0., 1.) * color::random(0., 1.);
                     sphere_material = Rc::new(Lambertian::from(albedo));
-                    world.add(Rc::new(Sphere::new(center, 0.2, sphere_material)));
+                    let center2 = center + Vec3::from(0., random_double(0., 0.5), 0.);
+                    world.add(Rc::new(MovingSphere::new(center, center2,0.,1., 0.2, sphere_material)));
                 } else if choose_mat < 0.95 {
                     // metal
                     let albedo = color::random(0.5, 1.);
@@ -66,10 +67,10 @@ fn random_scene() -> HittableList {
 
 fn main() {
     // Image
-    const ASPECT_RATIO: f32 = 3.0 / 2.0;
-    const IMAGE_WIDTH: i32 = 1200;
+    const ASPECT_RATIO: f32 = 16.0 / 9.0;
+    const IMAGE_WIDTH: i32 = 400;
     const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
-    const SAMPLES_PER_PIXEL: i32 = 500;
+    const SAMPLES_PER_PIXEL: i32 = 100;
     const MAX_DEPTH: i32 = 50;
 
     // World
@@ -85,7 +86,7 @@ fn main() {
     let aperture: f32 = 0.1;
 
 
-    let cam = Camera::new(lookfrom, lookat, vup, 20.0, ASPECT_RATIO, aperture, dist_to_focus);
+    let cam = Camera::new(lookfrom, lookat, vup, 20., ASPECT_RATIO, aperture, dist_to_focus, 0., 1.);
 
     // Render
     println!("P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT);
