@@ -93,7 +93,6 @@ fn main() {
 
     for j in (0..IMAGE_HEIGHT).rev() {
         eprint!("\rScanlines remaining: {}/{}            ", j, IMAGE_HEIGHT);
-        io::stdout().flush().unwrap();
         for i in 0..IMAGE_WIDTH {
             let mut pixel_color = color::new();
             for _s in 0..SAMPLES_PER_PIXEL {
@@ -106,5 +105,4 @@ fn main() {
         }
     }
     eprint!("\nDone\n");
-    io::stdout().flush().unwrap();
 }
