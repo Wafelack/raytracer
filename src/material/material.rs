@@ -1,6 +1,6 @@
 use crate::{ray::*, vec3::*,utils::*,  objects::hittable::HitRecord};
 
-pub trait Material {
+pub trait Material: Send + Sync{
     fn scatter(&self, r_in: Ray, rec: HitRecord, attenuation: &mut color, scattered: &mut Ray) -> bool;
 }
 #[derive(Copy, Clone)]

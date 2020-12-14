@@ -1,16 +1,17 @@
 use crate::{vec3::*, ray::*, objects::hittable::*, material::material::*};
-use std::rc::Rc;
+use std::sync::Arc;
+
 pub struct MovingSphere {
     pub center0: point3,
     pub center1: point3,
     pub time0: f32,
     pub time1: f32,
     pub radius: f32, 
-    pub mat_ptr: Rc<dyn Material>
+    pub mat_ptr: Arc<dyn Material>
 }
 
 impl MovingSphere {
-    pub fn new(cen0: point3, cen1: point3, time0: f32, time1: f32, r: f32, m: Rc<dyn Material>) -> Self {
+    pub fn new(cen0: point3, cen1: point3, time0: f32, time1: f32, r: f32, m: Arc<dyn Material>) -> Self {
         Self {center0: cen0, center1: cen1, time0, time1, radius:r , mat_ptr: m}
     }
     pub fn center(&self, time: f32) -> point3 {

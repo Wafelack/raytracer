@@ -1,9 +1,12 @@
 use rand::Rng;
 
 pub fn degrees_to_radians(degrees: f32) -> f32 {
-    degrees * std::f32::consts::PI / 180.
+    //degrees * std::f32::consts::PI / 180.
+    degrees.to_radians()
 }
 pub fn clamp(x: f32, min: f32, max: f32) -> f32 {
+    x.clamp(min , max)
+    /*
     if x < min {
         min
     } else if x > max {
@@ -11,6 +14,7 @@ pub fn clamp(x: f32, min: f32, max: f32) -> f32 {
     } else {
         x
     }
+    */
 }
 pub fn random_double(min: f32, max: f32) -> f32 {
     rand::thread_rng().gen_range(min, max)

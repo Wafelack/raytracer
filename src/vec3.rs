@@ -2,7 +2,7 @@ use std::ops;
 use crate::utils::random_double;
 use std::cmp::min;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone , Default)]
 pub struct Vec3 {
     pub e: [f32; 3],
 }
