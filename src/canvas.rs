@@ -75,23 +75,24 @@ impl Canvas {
         self.write_pixels_to_writer(&mut locked).unwrap();
     }
     pub fn write_pixels_to_writer<W: Write>(&self, writer: &mut W) -> Result<(), std::io::Error> {
-        self.pixels.chunks(self.xsize).rev().try_for_each(|line| {
-            line.iter()
-                .try_for_each(|p| write_color_to_writer(writer, *p, self.samples_per_pixel))
-        })
+        self.iter_pixels()
+            .try_for_each(|&p| write_color_to_writer(writer, p, self.samples_per_pixel))
     }
-    pub fn write_header(&self){
+    pub fn write_header(&self) {
         self.write_header_to_writer(&mut stdout()).unwrap();
     }
-    pub fn write_header_to_writer<W: Write>(&self , w: &mut W) -> Result<() , std::io::Error>{
-        writeln!(w , "P3\n{} {}\n255", self.xsize , self.ysize)
+    pub fn write_header_to_writer<W: Write>(&self, w: &mut W) -> Result<(), std::io::Error> {
+        writeln!(w, "P3\n{} {}\n255", self.xsize, self.ysize)
     }
 
+    pub fn iter_pixels(&self) -> impl Iterator<Item = &'_ color> + '_ {
+        self.pixels.chunks(self.xsize).rev().flatten()
+    }
 
     pub fn dimensions(&self) -> (usize, usize) {
         (self.xsize, self.ysize)
     }
-    fn get_pixels(&self) -> &[color] {
+    pub fn get_pixels(&self) -> &[color] {
         &*self.pixels
     }
 }
