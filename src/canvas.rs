@@ -80,10 +80,18 @@ impl Canvas {
                 .try_for_each(|p| write_color_to_writer(writer, *p, self.samples_per_pixel))
         })
     }
+    pub fn write_header(&self){
+        self.write_header_to_writer(&mut stdout()).unwrap();
+    }
+    pub fn write_header_to_writer<W: Write>(&self , w: &mut W) -> Result<() , std::io::Error>{
+        writeln!(w , "P3\n{} {}\n255", self.xsize , self.ysize)
+    }
+
+
     pub fn dimensions(&self) -> (usize, usize) {
         (self.xsize, self.ysize)
     }
-    pub fn get_pixels(&self) -> &[color] {
+    fn get_pixels(&self) -> &[color] {
         &*self.pixels
     }
 }

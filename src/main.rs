@@ -137,12 +137,11 @@ fn main() {
     };
 
     // Render
-    println!("P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT);
     let c = Canvas::from_fn_parallel_with_progress(
         IMAGE_WIDTH as usize,
         IMAGE_HEIGHT as usize,
         SAMPLES_PER_PIXEL as usize,
-        |i, j| render_pixel(i, j),
+        render_pixel,
         |total, num_done| {
             eprint!(
                 "\r{:.2} percent done",
@@ -150,6 +149,7 @@ fn main() {
             );
         },
     );
+    c.write_header();
     c.write_pixels();
     eprint!("\nDone\n");
 }
