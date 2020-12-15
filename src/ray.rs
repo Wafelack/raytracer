@@ -1,18 +1,18 @@
-use crate::vec3::*;
 use crate::objects::hittable::*;
+use crate::vec3::*;
 
 #[derive(Copy, Clone)]
 pub struct Ray {
     pub orig: point3,
     pub dir: Vec3,
-    pub tm: f32
+    pub tm: f32,
 }
 impl Ray {
     pub fn new(origin: point3, direction: Vec3, time: f32) -> Self {
         Ray {
             orig: origin,
             dir: direction,
-            tm: time
+            tm: time,
         }
     }
     pub fn origin(&self) -> point3 {
@@ -37,13 +37,15 @@ pub fn ray_color(r: Ray, world: &impl Hittable, depth: i32) -> color {
     }
 
     if world.hit(r, 0.001, f32::INFINITY, &mut rec) {
-        let mut scattered= Ray::new(point3::new(),Vec3::new(), 0.);
+        let mut scattered = Ray::new(point3::new(), Vec3::new(), 0.);
         let mut attenuation = color::new();
-        if rec.mat_ptr.scatter(r, rec.clone(), &mut attenuation, &mut scattered) {
+        if rec
+            .mat_ptr
+            .scatter(r, rec.clone(), &mut attenuation, &mut scattered)
+        {
             return attenuation * ray_color(scattered, world, depth - 1);
         }
-        return color::from(0.,0.,0.);
-
+        return color::from(0., 0., 0.);
     }
     let unit_direction = unit_vector(r.direction());
 

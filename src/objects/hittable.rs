@@ -1,6 +1,5 @@
-use crate::{vec3::*, ray::*,material::material::*};
+use crate::{material::material::*, ray::*, vec3::*};
 use std::sync::Arc;
-
 
 #[derive(Clone)]
 pub struct HitRecord {
@@ -30,6 +29,6 @@ impl HitRecord {
     }
 }
 
-pub trait Hittable: Send + Sync{
+pub trait Hittable: Send + Sync {
     fn hit(&self, r: Ray, t_min: f32, t_max: f32, rec: &mut HitRecord) -> bool;
 }

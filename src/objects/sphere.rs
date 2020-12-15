@@ -1,16 +1,16 @@
-use crate::{objects::hittable::*, ray::*, vec3::*, material::material::Material};
+use crate::{material::material::Material, objects::hittable::*, ray::*, vec3::*};
 use std::sync::Arc;
 pub struct Sphere {
     pub center: point3,
     pub radius: f32,
-    pub mat_ptr: Arc<dyn Material>
+    pub mat_ptr: Arc<dyn Material>,
 }
 impl Sphere {
     pub fn new(cen: point3, r: f32, m: Arc<dyn Material>) -> Self {
         Self {
             center: cen,
             radius: r,
-            mat_ptr: m
+            mat_ptr: m,
         }
     }
 }
