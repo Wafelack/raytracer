@@ -67,6 +67,7 @@ fn random_scene() -> HittableList {
 
 }
 
+
 fn main() {
     // Image
     const ASPECT_RATIO: f32 = 16.0 / 9.0;
@@ -92,13 +93,7 @@ fn main() {
 
     // Render
     println!("P3\n{} {}\n255", IMAGE_WIDTH, IMAGE_HEIGHT);
-    let c = Canvas::from_fn_paralell(IMAGE_WIDTH as usize, IMAGE_HEIGHT as usize , SAMPLES_PER_PIXEL as usize , |i , j|{
-        /*
-        if last_j != j{
-            eprint!("\rScanlines remaining: {}/{}            ", j, IMAGE_HEIGHT);
-            last_j = j;
-        }
-        */
+    let c = Canvas::from_fn_paralell_with_progress(IMAGE_WIDTH as usize, IMAGE_HEIGHT as usize , SAMPLES_PER_PIXEL as usize , |i , j|{
         let mut pixel_color = color::new();
         for _ in 0..SAMPLES_PER_PIXEL{
                 let u = (i as f32 + random_double(0., 1.)) / ((IMAGE_WIDTH - 1) as f32);
@@ -107,6 +102,8 @@ fn main() {
                 pixel_color.add(ray_color(r, &*world, MAX_DEPTH));
         }
         pixel_color
+    } , |total , num_done|{
+        eprint!("\r{:.2}" , ((num_done as f32 / total as f32) * 100.).min(100.));
     });
     c.write_pixels();
     eprint!("\nDone\n");

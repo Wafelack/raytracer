@@ -6,6 +6,13 @@ use std::cmp::min;
 pub struct Vec3 {
     pub e: [f32; 3],
 }
+
+impl Into<(f32 , f32 , f32)> for Vec3{
+    fn into(self) -> (f32 , f32 ,f32){
+        (self.x() , self.y() , self.z())
+    }
+}
+
 impl Vec3 {
     pub fn new() -> Self {
         Self { e: [0.,0.,0.]}
