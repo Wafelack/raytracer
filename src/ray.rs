@@ -41,7 +41,7 @@ pub fn ray_color(r: Ray, world: &impl Hittable, depth: i32) -> color {
         let mut attenuation = color::new();
         if rec
             .mat_ptr
-            .scatter(r, rec.clone(), &mut attenuation, &mut scattered)
+            .scatter(r, rec , &mut attenuation, &mut scattered)
         {
             return attenuation * ray_color(scattered, world, depth - 1);
         }
