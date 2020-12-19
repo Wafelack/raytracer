@@ -1,5 +1,4 @@
 use std::sync::Arc;
-use std::{io, io::Write};
 
 mod camera;
 mod canvas;
@@ -12,7 +11,6 @@ mod vec3;
 
 use camera::Camera;
 use canvas::Canvas;
-use colors::write_color;
 use material::material::*;
 use objects::{hittable_list::*, moving_sphere::*, sphere::*};
 use ray::*;

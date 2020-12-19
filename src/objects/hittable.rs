@@ -1,20 +1,24 @@
 use crate::{material::material::*, ray::*, vec3::*};
-use std::sync::Arc;
 
-#[derive(Clone)]
-pub struct HitRecord {
+#[derive(Clone , Copy)]
+pub struct HitRecord<'a> {
     pub p: point3,
     pub normal: Vec3,
-    pub mat_ptr: Arc<dyn Material>,
+    pub mat_ptr: &'a dyn Material,
     pub t: f32,
     pub front_face: bool,
 }
-impl HitRecord {
+
+static DFL_LAMBERTIAN: Lambertian = Lambertian{
+    albedo: color{e: [0. , 0. , 0.]}
+};
+
+impl HitRecord<'_> {
     pub fn void() -> Self {
         Self {
             p: Vec3::new(),
             normal: Vec3::new(),
-            mat_ptr: Arc::new(Lambertian::from(color::new())),
+            mat_ptr: &DFL_LAMBERTIAN,
             t: 0.,
             front_face: true,
         }
@@ -30,5 +34,5 @@ impl HitRecord {
 }
 
 pub trait Hittable: Send + Sync {
-    fn hit(&self, r: Ray, t_min: f32, t_max: f32, rec: &mut HitRecord) -> bool;
+    fn hit<'a>(&'a self, r: Ray, t_min: f32, t_max: f32, rec: &mut HitRecord<'a>) -> bool;
 }
