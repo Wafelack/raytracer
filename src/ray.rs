@@ -36,12 +36,12 @@ pub fn ray_color(r: Ray, world: &impl Hittable, depth: i32) -> color {
         return color::new();
     }
 
-    if world.hit(r, 0.001, f32::INFINITY, &mut rec) {
+    if world.hit(&r, 0.001, f32::INFINITY, &mut rec) {
         let mut scattered = Ray::new(point3::new(), Vec3::new(), 0.);
         let mut attenuation = color::new();
         if rec
             .mat_ptr
-            .scatter(r, rec , &mut attenuation, &mut scattered)
+            .scatter(r, rec, &mut attenuation, &mut scattered)
         {
             return attenuation * ray_color(scattered, world, depth - 1);
         }

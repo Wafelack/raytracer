@@ -1,6 +1,6 @@
-use crate::{material::material::*, ray::*, vec3::*};
+use crate::{aabb::*, material::material::*, ray::*, vec3::*};
 
-#[derive(Clone , Copy)]
+#[derive(Clone, Copy)]
 pub struct HitRecord<'a> {
     pub p: point3,
     pub normal: Vec3,
@@ -9,8 +9,8 @@ pub struct HitRecord<'a> {
     pub front_face: bool,
 }
 
-static DFL_LAMBERTIAN: Lambertian = Lambertian{
-    albedo: color{e: [0. , 0. , 0.]}
+static DFL_LAMBERTIAN: Lambertian = Lambertian {
+    albedo: color { e: [0., 0., 0.] },
 };
 
 impl HitRecord<'_> {
@@ -34,5 +34,8 @@ impl HitRecord<'_> {
 }
 
 pub trait Hittable: Send + Sync {
-    fn hit<'a>(&'a self, r: Ray, t_min: f32, t_max: f32, rec: &mut HitRecord<'a>) -> bool;
+    fn hit<'a>(&'a self, r: &Ray, t_min: f32, t_max: f32, rec: &mut HitRecord<'a>) -> bool;
+    fn bounding_box<'a>(&'a self, time0: f32, time1: f32, output_box: &mut Aabb) -> bool {
+        true
+    }
 }

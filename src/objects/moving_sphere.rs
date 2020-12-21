@@ -1,4 +1,4 @@
-use crate::{material::material::*, objects::hittable::*, ray::*, vec3::*};
+use crate::{aabb::*, material::material::*, objects::hittable::*, ray::*, vec3::*};
 use std::sync::Arc;
 
 pub struct MovingSphere {
@@ -34,7 +34,19 @@ impl MovingSphere {
     }
 }
 impl Hittable for MovingSphere {
-    fn hit<'a>(&'a self, r: Ray, t_min: f32, t_max: f32, rec: &mut HitRecord<'a>) -> bool {
+    fn bounding_box<'a>(&'a self, time0: f32, time1: f32, output_box: &mut Aabb) -> bool {
+        let box0 = Aabb::from(
+            &Vec3::from(self.radius, self.radius, self.radius + -time0),
+            &Vec3::from(self.radius, self.radius, self.radius + time0),
+        );
+        let box1 = Aabb::from(
+            &Vec3::from(self.radius, self.radius, self.radius + -time1),
+            &Vec3::from(self.radius, self.radius, self.radius + time1),
+        );
+        *output_box = surrounding_box(&box0, &box1);
+        true
+    }
+    fn hit<'a>(&'a self, r: &Ray, t_min: f32, t_max: f32, rec: &mut HitRecord<'a>) -> bool {
         let oc = r.origin() - self.center(r.time());
         let a = r.direction().len_squared();
         let half_b = dot(oc, r.direction());
@@ -61,7 +73,7 @@ impl Hittable for MovingSphere {
         rec.t = root;
         rec.p = r.at(rec.t);
         let outward_normal = (rec.p - self.center(r.time())) / self.radius;
-        rec.set_face_normal(r, outward_normal);
+        rec.set_face_normal(*r, outward_normal);
         rec.mat_ptr = &*self.mat_ptr;
 
         true

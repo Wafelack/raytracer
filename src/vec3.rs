@@ -158,6 +158,15 @@ pub fn cross(u: Vec3, v: Vec3) -> Vec3 {
         u.e[0] * v.e[1] - u.e[1] * v.e[0],
     )
 }
+
+impl std::ops::Index<usize> for Vec3 {
+    type Output = f32;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.e[index]
+    }
+}
+
 pub fn unit_vector(v: Vec3) -> Vec3 {
     v / v.len()
 }

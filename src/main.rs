@@ -1,5 +1,7 @@
 use std::sync::Arc;
 
+mod aabb;
+mod bvh;
 mod camera;
 mod canvas;
 mod colors;
@@ -9,13 +11,13 @@ mod ray;
 mod utils;
 mod vec3;
 
-use camera::Camera;
-use canvas::Canvas;
-use material::material::*;
-use objects::{hittable_list::*, moving_sphere::*, sphere::*};
-use ray::*;
-use utils::*;
-use vec3::*;
+pub use camera::Camera;
+pub use canvas::Canvas;
+pub use material::material::*;
+pub use objects::{hittable_list::*, moving_sphere::*, sphere::*};
+pub use ray::*;
+pub use utils::*;
+pub use vec3::*;
 
 fn random_scene() -> HittableList {
     let mut world = HittableList::new();
@@ -142,7 +144,7 @@ fn main() {
         render_pixel,
         |total, num_done| {
             eprint!(
-                "\r{:.2} percent done",
+                "\r{:.2}% done",
                 ((num_done as f32 / total as f32) * 100.).min(100.)
             );
         },

@@ -1,4 +1,4 @@
-use crate::{material::material::Material, objects::hittable::*, ray::*, vec3::*};
+use crate::{aabb::*, material::material::Material, objects::hittable::*, ray::*, vec3::*};
 use std::sync::Arc;
 pub struct Sphere {
     pub center: point3,
@@ -16,7 +16,7 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit<'a>(&'a self, r: Ray, t_min: f32, t_max: f32, rec: &mut HitRecord<'a>) -> bool {
+    fn hit<'a>(&'a self, r: &Ray, t_min: f32, t_max: f32, rec: &mut HitRecord<'a>) -> bool {
         let oc = r.origin() - self.center;
         let a = r.direction().len_squared();
         let half_b = dot(oc, r.direction());
@@ -43,9 +43,17 @@ impl Hittable for Sphere {
         rec.t = root;
         rec.p = r.at(rec.t);
         let outward_normal = (rec.p - self.center) / self.radius;
-        rec.set_face_normal(r, outward_normal);
+        rec.set_face_normal(*r, outward_normal);
         rec.mat_ptr = &*self.mat_ptr;
 
+        true
+    }
+
+    fn bounding_box<'a>(&'a self, time0: f32, time1: f32, output_box: &mut Aabb) -> bool {
+        *output_box = Aabb::from(
+            &(self.center - Vec3::from(self.radius, self.radius, self.radius)),
+            &(self.center + Vec3::from(self.radius, self.radius, self.radius)),
+        );
         true
     }
 }
