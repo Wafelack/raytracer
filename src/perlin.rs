@@ -2,7 +2,7 @@ use crate::{utils::*, vec3::*};
 
 pub struct Perlin {
   point_count: usize,
-  ranfloat: Vec<f32>,
+  ranvec: Vec<Vec3>,
   perm_x: Vec<i32>,
   perm_y: Vec<i32>,
   perm_z: Vec<i32>,
@@ -11,10 +11,10 @@ pub struct Perlin {
 impl Perlin {
   pub fn new() -> Self {
     let point_count = 256usize;
-    let mut ranfloat: Vec<f32> = Vec::with_capacity(point_count);
+    let mut ranvec: Vec<Vec3> = Vec::with_capacity(point_count);
 
     for _ in 0..point_count {
-      ranfloat.push(random_double(0., 1.));
+      ranvec.push(unit_vector(Vec3::random(-1., 1.)));
     }
     let perm_x = Perlin::generate_perm(point_count);
     let perm_y = Perlin::generate_perm(point_count);
@@ -22,7 +22,7 @@ impl Perlin {
 
     Self {
       point_count,
-      ranfloat,
+      ranvec,
       perm_x,
       perm_y,
       perm_z,
@@ -41,12 +41,12 @@ impl Perlin {
     let j = p.y().floor() as i32;
     let k = p.z().floor() as i32;
 
-    let mut c = [[[0.; 2]; 2]; 2];
+    let mut c = [[[Vec3::new(); 2]; 2]; 2];
 
     for di in 0..2 {
       for dj in 0..2 {
         for dk in 0..2 {
-          c[di][dj][dk] = self.ranfloat[(self.perm_x[(i + di as i32) as usize & 255]
+          c[di][dj][dk] = self.ranvec[(self.perm_x[(i + di as i32) as usize & 255]
             ^ self.perm_y[(j + dj as i32) as usize & 255]
             ^ self.perm_z[(k + dk as i32) as usize & 255])
             as usize];
@@ -54,17 +54,22 @@ impl Perlin {
       }
     }
 
-    Self::trilinear_interp(c, u, v, w)
+    Self::perlin_interp(c, u, v, w)
   }
-  fn trilinear_interp(c: [[[f32; 2]; 2]; 2], u: f32, v: f32, w: f32) -> f32 {
+  fn perlin_interp(c: [[[Vec3; 2]; 2]; 2], u: f32, v: f32, w: f32) -> f32 {
+    let uu = u * u * (3. - 2. * u);
+    let vv = v * v * (3. - 2. * v);
+    let ww = w * w * (3. - 2. * w);
+
     let mut accum = 0.;
     for i in 0..2 {
       for j in 0..2 {
         for k in 0..2 {
-          accum += (i as f32 * u as f32 + (1. - i as f32) * (1. - u))
-            * (j as f32 * v as f32 + (1. - j as f32) * (1. - v))
-            * (k as f32 * w as f32 + (1. - k as f32) * (1. - w))
-            * c[i][j][k];
+          let weight_v = Vec3::from(u - i as f32, v - j as f32, w - k as f32);
+          accum += (i as f32 * uu as f32 + (1. - i as f32) * (1. - uu))
+            * (j as f32 * vv as f32 + (1. - j as f32) * (1. - vv))
+            * (k as f32 * ww as f32 + (1. - k as f32) * (1. - ww))
+            * dot(c[i][j][k], weight_v);
         }
       }
     }
