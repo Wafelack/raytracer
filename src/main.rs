@@ -8,6 +8,7 @@ mod colors;
 mod material;
 mod objects;
 mod ray;
+mod texture;
 mod utils;
 mod vec3;
 
