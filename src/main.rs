@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use std::time::Instant;
 
 mod aabb;
 mod bvh;
@@ -122,7 +123,8 @@ fn random_scene() -> HittableList {
 }
 
 fn main() {
-    // Image
+    let time = Instant::now(); // Time counter
+                               // Image
     const ASPECT_RATIO: f32 = 16.0 / 9.0;
     const IMAGE_WIDTH: usize = 300;
     const IMAGE_HEIGHT: usize = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as usize;
@@ -186,13 +188,34 @@ fn main() {
         SAMPLES_PER_PIXEL as usize,
         render_pixel,
         |total, num_done| {
+            let percentage = ((num_done as f32 / total as f32) * 100.).min(100.);
+            let bar = get_bar(percentage);
             eprint!(
-                "\r{:.2}% done",
+                "\r{} {:.2}%",
+                bar,
                 ((num_done as f32 / total as f32) * 100.).min(100.)
             );
         },
     );
     c.write_header();
     c.write_pixels();
-    eprint!("\nDone\n");
+    let elapsed = time.elapsed();
+    eprint!("\nDone in {:.2}s\n", elapsed.as_secs_f32());
+}
+
+fn get_bar(percentage: f32) -> String {
+    let to_color = (percentage / 5.).floor() as i32;
+    let picto = '#';
+    let mut toret = String::from("[");
+
+    for i in 0..to_color {
+        toret.push(picto);
+    }
+
+    for i in 0..(20 - to_color) {
+        toret.push(' ');
+    }
+    toret.push(']');
+
+    toret
 }
