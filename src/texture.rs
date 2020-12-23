@@ -1,10 +1,10 @@
 use crate::vec3::*;
 
-pub trait Texture {
+pub trait Texture: Send + Sync {
   fn value(&self, u: f32, v: f32, p: &point3) -> color;
 }
-
-struct SolidColor {
+#[derive(Clone)]
+pub struct SolidColor {
   color_value: color,
 }
 impl SolidColor {

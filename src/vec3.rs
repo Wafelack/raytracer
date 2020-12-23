@@ -1,5 +1,4 @@
 use crate::utils::random_double;
-use std::cmp::min;
 use std::ops;
 
 #[derive(Copy, Clone, Default)]

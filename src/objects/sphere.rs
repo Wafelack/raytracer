@@ -15,13 +15,13 @@ impl Sphere {
             mat_ptr: m,
         }
     }
-    pub fn get_sphere_uv(p: &point3, u: &mut f32, v: &mut f32) {
-        let theta = -p.y().acos();
-        let phi = -p.z().atan2(p.x()) + PI;
+}
+pub fn get_sphere_uv(p: &point3, u: &mut f32, v: &mut f32) {
+    let theta = -p.y().acos();
+    let phi = -p.z().atan2(p.x()) + PI;
 
-        *u = phi / (2. * PI);
-        *v = theta / PI;
-    }
+    *u = phi / (2. * PI);
+    *v = theta / PI;
 }
 
 impl Hittable for Sphere {
@@ -53,6 +53,7 @@ impl Hittable for Sphere {
         rec.p = r.at(rec.t);
         let outward_normal = (rec.p - self.center) / self.radius;
         rec.set_face_normal(*r, outward_normal);
+        get_sphere_uv(&outward_normal, &mut rec.u, &mut rec.v);
         rec.mat_ptr = &*self.mat_ptr;
 
         true

@@ -1,4 +1,5 @@
 use crate::{aabb::*, material::material::*, ray::*, vec3::*};
+use lazy_static::*;
 
 #[derive(Clone, Copy)]
 pub struct HitRecord<'a> {
@@ -11,16 +12,16 @@ pub struct HitRecord<'a> {
     pub front_face: bool,
 }
 
-static DFL_LAMBERTIAN: Lambertian = Lambertian {
-    albedo: color { e: [0., 0., 0.] },
-};
+lazy_static! {
+    static ref DFL_LAMBERTIAN: Lambertian = Lambertian::from(color::new());
+}
 
 impl HitRecord<'_> {
     pub fn void() -> Self {
         Self {
             p: Vec3::new(),
             normal: Vec3::new(),
-            mat_ptr: &DFL_LAMBERTIAN,
+            mat_ptr: &*DFL_LAMBERTIAN,
             t: 0.,
             u: 0.,
             v: 0.,
