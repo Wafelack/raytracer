@@ -26,7 +26,7 @@ pub use vec3::*;
 
 fn two_perlin_spheres() -> HittableList {
     let mut objects = HittableList::new();
-    let pertext = Arc::new(NoiseTexture::new());
+    let pertext = Arc::new(NoiseTexture::from(4.));
     objects.add(Arc::new(Sphere::new(
         point3::from(0., -1000., 0.),
         1000.,
