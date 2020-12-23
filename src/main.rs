@@ -17,13 +17,40 @@ pub use canvas::Canvas;
 pub use material::material::*;
 pub use objects::{hittable_list::*, moving_sphere::*, sphere::*};
 pub use ray::*;
+pub use texture::*;
 pub use utils::*;
 pub use vec3::*;
+
+fn two_spheres() -> HittableList {
+    let mut objects = HittableList::new();
+    let checker = Arc::new(CheckerTexture::from_colors(
+        color::from(0.2, 0.3, 0.1),
+        color::from(0.9, 0.9, 0.9),
+    ));
+
+    objects.add(Arc::new(Sphere::new(
+        point3::from(0., -10., 0.),
+        10.,
+        Arc::new(Lambertian::from_texture(checker.clone())),
+    )));
+    objects.add(Arc::new(Sphere::new(
+        point3::from(0., 10., 0.),
+        10.,
+        Arc::new(Lambertian::from_texture(checker.clone())),
+    )));
+
+    objects
+}
 
 fn random_scene() -> HittableList {
     let mut world = HittableList::new();
 
-    let ground_material = Arc::new(Lambertian::from(color::from(0.5, 0.5, 0.5)));
+    let checker = Arc::new(CheckerTexture::from_colors(
+        color::from(0.2, 0.3, 0.1),
+        color::from(0.9, 0.9, 0.9),
+    ));
+
+    let ground_material = Arc::new(Lambertian::from_texture(checker));
     world.add(Arc::new(Sphere::new(
         point3::from(0., -1000., 0.),
         1000.,
@@ -99,26 +126,41 @@ fn main() {
     const ASPECT_RATIO: f32 = 16.0 / 9.0;
     const IMAGE_WIDTH: usize = 300;
     const IMAGE_HEIGHT: usize = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as usize;
-    const SAMPLES_PER_PIXEL: usize = 100;
+    const SAMPLES_PER_PIXEL: usize = 50;
     const MAX_DEPTH: usize = 50;
 
     // World
 
-    let world = Arc::new(random_scene());
+    let world = HittableList::new();
 
     // Camera
 
-    let lookfrom = point3::from(13., 2., 3.);
-    let lookat = point3::from(0., 0., 0.);
-    let vup = Vec3::from(0., 1., 0.);
-    let dist_to_focus: f32 = 10.0;
-    let aperture: f32 = 0.1;
+    let mut lookfrom = point3::from(13., 2., 3.);
+    let mut lookat = point3::from(0., 0., 0.);
+    let mut vup = Vec3::from(0., 1., 0.);
+    let mut dist_to_focus: f32 = 10.0;
+    let mut aperture: f32 = 0.1;
+    let mut vfov = 40.;
+
+    let mode = 0;
+
+    match mode {
+        0 => {
+            world = two_spheres();
+            lookfrom = point3::from(13., 2., 3.);
+            lookat = point3::new(); // 0, 0 and 0
+            vfov = 20.;
+        }
+        _ => {
+            world = random_scene();
+        }
+    }
 
     let cam = Camera::new(
         lookfrom,
         lookat,
         vup,
-        20.,
+        vfov,
         ASPECT_RATIO,
         aperture,
         dist_to_focus,

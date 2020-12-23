@@ -41,12 +41,12 @@ impl Aabb {
   }
   pub fn hit(&self, r: &Ray, mut t_min: f32, mut t_max: f32) -> bool {
     for i in 0..3 {
-      let invD = 1.0 / r.direction()[i];
+      let inv_d = 1.0 / r.direction()[i];
 
-      let mut t0 = (self.min()[i] - r.origin()[i]) * invD;
-      let mut t1 = (self.max()[i] - r.origin()[i]) * invD;
+      let mut t0 = (self.min()[i] - r.origin()[i]) * inv_d;
+      let mut t1 = (self.max()[i] - r.origin()[i]) * inv_d;
 
-      if invD < 0.0 {
+      if inv_d < 0.0 {
         let prev_t0 = t0;
         t0 = t1;
         t1 = prev_t0;

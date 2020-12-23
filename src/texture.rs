@@ -1,4 +1,5 @@
 use crate::vec3::*;
+use std::sync::Arc;
 
 pub trait Texture: Send + Sync {
   fn value(&self, u: f32, v: f32, p: &point3) -> color;
@@ -26,5 +27,36 @@ impl SolidColor {
 impl Texture for SolidColor {
   fn value(&self, u: f32, v: f32, p: &point3) -> color {
     self.color_value
+  }
+}
+
+pub struct CheckerTexture {
+  odd: Arc<dyn Texture>,
+  even: Arc<dyn Texture>,
+}
+
+impl CheckerTexture {
+  pub fn from_texture(_even: Arc<dyn Texture>, _odd: Arc<dyn Texture>) -> Self {
+    Self {
+      odd: _odd,
+      even: _even,
+    }
+  }
+  pub fn from_colors(c1: color, c2: color) -> Self {
+    Self {
+      even: Arc::new(SolidColor::from(c1)),
+      odd: Arc::new(SolidColor::from(c2)),
+    }
+  }
+}
+
+impl Texture for CheckerTexture {
+  fn value(&self, u: f32, v: f32, p: &point3) -> color {
+    let sines = (10. * p.x()).sin() * (10. * p.y()).sin() * (10. * p.z()).sin();
+    if sines < 0. {
+      return self.odd.value(u, v, p);
+    } else {
+      return self.even.value(u, v, p);
+    }
   }
 }
