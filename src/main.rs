@@ -131,7 +131,7 @@ fn main() {
 
     // World
 
-    let world = HittableList::new();
+    let mut world = HittableList::new();
 
     // Camera
 
@@ -174,7 +174,7 @@ fn main() {
             let u = (i as f32 + random_double(0., 1.)) / ((IMAGE_WIDTH - 1) as f32);
             let v = (j as f32 + random_double(0., 1.)) / ((IMAGE_HEIGHT - 1) as f32);
             let r = cam.get_ray(u, v);
-            pixel_color.add(ray_color(r, &*world, MAX_DEPTH as i32));
+            pixel_color.add(ray_color(r, &world, MAX_DEPTH as i32));
         }
         pixel_color
     };
