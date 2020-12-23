@@ -28,6 +28,18 @@ impl Perlin {
       perm_z,
     }
   }
+  pub fn turb(&self, p: &point3, depth: i32) -> f32 {
+    let mut accum = 0f32;
+    let mut temp_p = *p;
+    let mut weight = 1.;
+
+    for _ in 0..depth {
+      accum += weight * self.noise(&temp_p);
+      weight *= 0.5;
+      temp_p = temp_p * 2 as f32;
+    }
+    accum.abs()
+  }
   pub fn noise(&self, p: &point3) -> f32 {
     let mut u = p.x() - p.x().floor();
     let mut v = p.y() - p.y().floor();

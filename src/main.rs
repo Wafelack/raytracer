@@ -230,15 +230,14 @@ fn main() {
 
 fn get_bar(percentage: f32) -> String {
     let to_color = (percentage / 2.).floor() as i32;
-    let picto = '#';
     let mut toret = String::from("[");
 
     for i in 0..to_color {
-        toret.push(picto);
+        toret.push('=');
     }
 
     for i in 0..(50 - to_color) {
-        toret.push(' ');
+        toret.push('-');
     }
     toret.push(']');
 
