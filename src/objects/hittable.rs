@@ -6,6 +6,8 @@ pub struct HitRecord<'a> {
     pub normal: Vec3,
     pub mat_ptr: &'a dyn Material,
     pub t: f32,
+    pub u: f32,
+    pub v: f32,
     pub front_face: bool,
 }
 
@@ -20,6 +22,8 @@ impl HitRecord<'_> {
             normal: Vec3::new(),
             mat_ptr: &DFL_LAMBERTIAN,
             t: 0.,
+            u: 0.,
+            v: 0.,
             front_face: true,
         }
     }
