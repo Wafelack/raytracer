@@ -1,5 +1,7 @@
 use crate::{aabb::*, material::material::Material, objects::hittable::*, ray::*, vec3::*};
+use std::f32::consts::PI;
 use std::sync::Arc;
+
 pub struct Sphere {
     pub center: point3,
     pub radius: f32,
@@ -12,6 +14,13 @@ impl Sphere {
             radius: r,
             mat_ptr: m,
         }
+    }
+    pub fn get_sphere_uv(p: &point3, u: &mut f32, v: &mut f32) {
+        let theta = -p.y().acos();
+        let phi = -p.z().atan2(p.x()) + PI;
+
+        *u = phi / (2. * PI);
+        *v = theta / PI;
     }
 }
 
