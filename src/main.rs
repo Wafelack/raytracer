@@ -8,6 +8,7 @@ mod canvas;
 mod colors;
 mod material;
 mod objects;
+mod perlin;
 mod ray;
 mod texture;
 mod utils;
@@ -17,10 +18,28 @@ pub use camera::Camera;
 pub use canvas::Canvas;
 pub use material::material::*;
 pub use objects::{hittable_list::*, moving_sphere::*, sphere::*};
+pub use perlin::*;
 pub use ray::*;
 pub use texture::*;
 pub use utils::*;
 pub use vec3::*;
+
+fn two_perlin_spheres() -> HittableList {
+    let mut objects = HittableList::new();
+    let pertext = Arc::new(NoiseTexture::new());
+    objects.add(Arc::new(Sphere::new(
+        point3::from(0., -1000., 0.),
+        1000.,
+        Arc::new(Lambertian::from_texture(pertext.clone())),
+    )));
+    objects.add(Arc::new(Sphere::new(
+        point3::from(0., 2., 0.),
+        2.,
+        Arc::new(Lambertian::from_texture(pertext.clone())),
+    )));
+
+    objects
+}
 
 fn two_spheres() -> HittableList {
     let mut objects = HittableList::new();
@@ -144,11 +163,17 @@ fn main() {
     let mut aperture: f32 = 0.1;
     let mut vfov = 40.;
 
-    let mode = 0;
+    let mode = 1;
 
     match mode {
         0 => {
             world = two_spheres();
+            lookfrom = point3::from(13., 2., 3.);
+            lookat = point3::new(); // 0, 0 and 0
+            vfov = 20.;
+        }
+        1 => {
+            world = two_perlin_spheres();
             lookfrom = point3::from(13., 2., 3.);
             lookat = point3::new(); // 0, 0 and 0
             vfov = 20.;
@@ -204,7 +229,7 @@ fn main() {
 }
 
 fn get_bar(percentage: f32) -> String {
-    let to_color = (percentage / 5.).floor() as i32;
+    let to_color = (percentage / 2.).floor() as i32;
     let picto = '#';
     let mut toret = String::from("[");
 
@@ -212,7 +237,7 @@ fn get_bar(percentage: f32) -> String {
         toret.push(picto);
     }
 
-    for i in 0..(20 - to_color) {
+    for i in 0..(50 - to_color) {
         toret.push(' ');
     }
     toret.push(']');
