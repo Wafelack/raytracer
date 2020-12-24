@@ -1,241 +1,0 @@
-warning: type `point3` should have an upper camel case name
-   --> src/vec3.rs:182:10
-    |
-182 | pub type point3 = Vec3;
-    |          ^^^^^^ help: convert the identifier to upper camel case: `Point3`
-    |
-    = note: `#[warn(non_camel_case_types)]` on by default
-
-warning: type `color` should have an upper camel case name
-   --> src/vec3.rs:183:10
-    |
-183 | pub type color = Vec3;
-    |          ^^^^^ help: convert the identifier to upper camel case (notice the capitalization): `Color`
-
-warning: value assigned to `sphere_material` is never read
-   --> src/main.rs:100:21
-    |
-100 |                 let mut sphere_material: Arc<dyn Material> =
-    |                     ^^^^^^^^^^^^^^^^^^^
-    |
-    = note: `#[warn(unused_assignments)]` on by default
-    = help: maybe it is overwritten before being read?
-
-warning: value assigned to `world` is never read
-   --> src/main.rs:165:9
-    |
-165 |     let mut world = HittableList::new();
-    |         ^^^^^^^^^
-    |
-    = help: maybe it is overwritten before being read?
-
-warning: unused variable: `time0`
-  --> src/bvh.rs:79:33
-   |
-79 |   fn bounding_box<'a>(&'a self, time0: f32, time1: f32, output_box: &mut Aabb) -> bool {
-   |                                 ^^^^^ help: if this is intentional, prefix it with an underscore: `_time0`
-   |
-   = note: `#[warn(unused_variables)]` on by default
-
-warning: unused variable: `time1`
-  --> src/bvh.rs:79:45
-   |
-79 |   fn bounding_box<'a>(&'a self, time0: f32, time1: f32, output_box: &mut Aabb) -> bool {
-   |                                             ^^^^^ help: if this is intentional, prefix it with an underscore: `_time1`
-
-warning: unused variable: `focal_length`
-  --> src/camera.rs:37:13
-   |
-37 |         let focal_length = 1.;
-   |             ^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_focal_length`
-
-warning: unused variable: `time0`
-  --> src/objects/hittable.rs:43:35
-   |
-43 |     fn bounding_box<'a>(&'a self, time0: f32, time1: f32, output_box: &mut Aabb) -> bool {
-   |                                   ^^^^^ help: if this is intentional, prefix it with an underscore: `_time0`
-
-warning: unused variable: `time1`
-  --> src/objects/hittable.rs:43:47
-   |
-43 |     fn bounding_box<'a>(&'a self, time0: f32, time1: f32, output_box: &mut Aabb) -> bool {
-   |                                               ^^^^^ help: if this is intentional, prefix it with an underscore: `_time1`
-
-warning: unused variable: `output_box`
-  --> src/objects/hittable.rs:43:59
-   |
-43 |     fn bounding_box<'a>(&'a self, time0: f32, time1: f32, output_box: &mut Aabb) -> bool {
-   |                                                           ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_output_box`
-
-warning: unused variable: `front_face`
-  --> src/objects/moving_sphere.rs:54:13
-   |
-54 |         let mut front_face = false;
-   |             ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_front_face`
-
-warning: unused variable: `front_face`
-  --> src/objects/sphere.rs:33:13
-   |
-33 |         let mut front_face = false;
-   |             ^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_front_face`
-
-warning: unused variable: `time0`
-  --> src/objects/sphere.rs:62:35
-   |
-62 |     fn bounding_box<'a>(&'a self, time0: f32, time1: f32, output_box: &mut Aabb) -> bool {
-   |                                   ^^^^^ help: if this is intentional, prefix it with an underscore: `_time0`
-
-warning: unused variable: `time1`
-  --> src/objects/sphere.rs:62:47
-   |
-62 |     fn bounding_box<'a>(&'a self, time0: f32, time1: f32, output_box: &mut Aabb) -> bool {
-   |                                               ^^^^^ help: if this is intentional, prefix it with an underscore: `_time1`
-
-warning: unused variable: `u`
-  --> src/texture.rs:29:19
-   |
-29 |   fn value(&self, u: f32, v: f32, p: &point3) -> color {
-   |                   ^ help: if this is intentional, prefix it with an underscore: `_u`
-
-warning: unused variable: `v`
-  --> src/texture.rs:29:27
-   |
-29 |   fn value(&self, u: f32, v: f32, p: &point3) -> color {
-   |                           ^ help: if this is intentional, prefix it with an underscore: `_v`
-
-warning: unused variable: `p`
-  --> src/texture.rs:29:35
-   |
-29 |   fn value(&self, u: f32, v: f32, p: &point3) -> color {
-   |                                   ^ help: if this is intentional, prefix it with an underscore: `_p`
-
-warning: unused variable: `u`
-  --> src/texture.rs:84:19
-   |
-84 |   fn value(&self, u: f32, v: f32, p: &point3) -> color {
-   |                   ^ help: if this is intentional, prefix it with an underscore: `_u`
-
-warning: unused variable: `v`
-  --> src/texture.rs:84:27
-   |
-84 |   fn value(&self, u: f32, v: f32, p: &point3) -> color {
-   |                           ^ help: if this is intentional, prefix it with an underscore: `_v`
-
-warning: unused variable: `components_per_pixel`
-   --> src/texture.rs:109:9
-    |
-109 |     let components_per_pixel = bytes_per_pixel;
-    |         ^^^^^^^^^^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_components_per_pixel`
-
-warning: unused variable: `p`
-   --> src/texture.rs:130:35
-    |
-130 |   fn value(&self, u: f32, v: f32, p: &point3) -> color {
-    |                                   ^ help: if this is intentional, prefix it with an underscore: `_p`
-
-warning: variable does not need to be mutable
-   --> src/main.rs:171:9
-    |
-171 |     let mut vup = Vec3::from(0., 1., 0.);
-    |         ----^^^
-    |         |
-    |         help: remove this `mut`
-    |
-    = note: `#[warn(unused_mut)]` on by default
-
-warning: variable does not need to be mutable
-   --> src/main.rs:172:9
-    |
-172 |     let mut dist_to_focus: f32 = 10.0;
-    |         ----^^^^^^^^^^^^^
-    |         |
-    |         help: remove this `mut`
-
-warning: variable does not need to be mutable
-   --> src/main.rs:173:9
-    |
-173 |     let mut aperture: f32 = 0.1;
-    |         ----^^^^^^^^
-    |         |
-    |         help: remove this `mut`
-
-warning: variable does not need to be mutable
-  --> src/objects/moving_sphere.rs:54:13
-   |
-54 |         let mut front_face = false;
-   |             ----^^^^^^^^^^
-   |             |
-   |             help: remove this `mut`
-
-warning: variable does not need to be mutable
-  --> src/objects/sphere.rs:33:13
-   |
-33 |         let mut front_face = false;
-   |             ----^^^^^^^^^^
-   |             |
-   |             help: remove this `mut`
-
-warning: associated function is never used: `from`
-  --> src/bvh.rs:12:10
-   |
-12 |   pub fn from(list: &mut HittableList, time0: f32, time1: f32) -> Self {
-   |          ^^^^
-   |
-   = note: `#[warn(dead_code)]` on by default
-
-warning: associated function is never used: `fromvec`
-  --> src/bvh.rs:16:10
-   |
-16 |   pub fn fromvec(
-   |          ^^^^^^^
-
-warning: function is never used: `box_compare`
-   --> src/bvh.rs:106:4
-    |
-106 | fn box_compare(a: &dyn Hittable, b: &dyn Hittable, axis: usize) -> bool {
-    |    ^^^^^^^^^^^
-
-warning: function is never used: `box_x_compare`
-   --> src/bvh.rs:116:4
-    |
-116 | fn box_x_compare(a: &dyn Hittable, b: &dyn Hittable) -> bool {
-    |    ^^^^^^^^^^^^^
-
-warning: function is never used: `box_y_compare`
-   --> src/bvh.rs:119:4
-    |
-119 | fn box_y_compare(a: &dyn Hittable, b: &dyn Hittable) -> bool {
-    |    ^^^^^^^^^^^^^
-
-warning: function is never used: `box_z_compare`
-   --> src/bvh.rs:122:4
-    |
-122 | fn box_z_compare(a: &dyn Hittable, b: &dyn Hittable) -> bool {
-    |    ^^^^^^^^^^^^^
-
-warning: field is never read: `w`
-  --> src/camera.rs:10:5
-   |
-10 |     w: Vec3,
-   |     ^^^^^^^
-
-warning: function is never used: `write_color`
- --> src/colors.rs:6:8
-  |
-6 | pub fn write_color(pixel_color: color, samples_per_pixel: i32) {
-  |        ^^^^^^^^^^^
-
-warning: field is never read: `point_count`
- --> src/perlin.rs:4:3
-  |
-4 |   point_count: usize,
-  |   ^^^^^^^^^^^^^^^^^^
-
-warning: Error finalizing incremental compilation session directory `/home/wafelack/dev/projects/raytracer/target/debug/incremental/raytracer-2oa8xelvwfh4y/s-fu9pvdybma-1z10z6c-working`: Permission denied (os error 13)
-
-warning: 36 warnings emitted
-
-    Finished dev [unoptimized + debuginfo] target(s) in 0.09s
-     Running `target/debug/raytracer`
-[                                                  ] 0.60%[                                                  ] 1.19%[                                                  ] 1.79%[#                                                 ] 2.38%[#                                                 ] 2.98%[#                                                 ] 3.57%[##                                                ] 4.17%[##                                                ] 4.76%[##                                                ] 5.36%[##                                                ] 5.95%[###                                               ] 6.55%[###                                               ] 7.14%[###                                               ] 7.74%[####                                              ] 8.33%[####                                              ] 8.93%[####                                              ] 9.52%[#####                                             ] 10.12%[#####                                             ] 10.71%[#####                                             ] 11.31%[#####                                             ] 11.90%[######                                            ] 12.50%[######                                            ] 13.10%[######                                            ] 13.69%[#######                                           ] 14.29%[#######                                           ] 14.88%[#######                                           ] 15.48%[########                                          ] 16.07%[########                                          ] 16.67%[########                                          ] 17.26%[########                                          ] 17.86%[#########                                         ] 18.45%[#########                                         ] 19.05%[#########                                         ] 19.64%[##########                                        ] 20.24%[##########                                        ] 20.83%[##########                                        ] 21.43%[###########                                       ] 22.02%[###########                                       ] 22.62%[###########                                       ] 23.21%[###########                                       ] 23.81%[############                                      ] 24.40%[############                                      ] 25.00%[############                                      ] 25.60%[#############                                     ] 26.19%[#############                                     ] 26.79%[#############                                     ] 27.38%[#############                                     ] 27.98%[##############                                    ] 28.57%[##############                                    ] 29.17%[##############                                    ] 29.76%[###############                                   ] 30.36%[###############                                   ] 30.95%[###############                                   ] 31.55%[################                                  ] 32.14%[################                                  ] 32.74%[################                                  ] 33.33%[################                                  ] 33.93%[#################                                 ] 34.52%[#################                                 ] 35.12%[#################                                 ] 35.71%[##################                                ] 36.31%[##################                                ] 36.90%[##################                                ] 37.50%[###################                               ] 38.10%[###################                               ] 38.69%[###################                               ] 39.29%[###################                               ] 39.88%[####################                              ] 40.48%[####################                              ] 41.07%[####################                              ] 41.67%[#####################                             ] 42.26%[#####################                             ] 42.86%[#####################                             ] 43.45%[######################                            ] 44.05%[######################                            ] 44.64%[######################                            ] 45.24%[######################                            ] 45.83%[#######################                           ] 46.43%[#######################                           ] 47.02%[#######################                           ] 47.62%[########################                          ] 48.21%[########################                          ] 48.81%[########################                          ] 49.40%[#########################                         ] 50.00%[#########################                         ] 50.60%[#########################                         ] 51.19%[#########################                         ] 51.79%[##########################                        ] 52.38%[##########################                        ] 52.98%[##########################                        ] 53.57%[###########################                       ] 54.17%[###########################                       ] 54.76%[###########################                       ] 55.36%[###########################                       ] 55.95%[############################                      ] 56.55%[############################                      ] 57.14%[############################                      ] 57.74%[#############################                     ] 58.33%[#############################                     ] 58.93%[#############################                     ] 59.52%[##############################                    ] 60.12%[##############################                    ] 60.71%[##############################                    ] 61.31%[##############################                    ] 61.90%[###############################                   ] 62.50%[###############################                   ] 63.10%[###############################                   ] 63.69%[################################                  ] 64.29%[################################                  ] 64.88%[################################                  ] 65.48%[#################################                 ] 66.07%[#################################                 ] 66.67%[#################################                 ] 67.26%[#################################                 ] 67.86%[##################################                ] 68.45%[##################################                ] 69.05%[##################################                ] 69.64%[###################################               ] 70.24%[###################################               ] 70.83%[###################################               ] 71.43%[####################################              ] 72.02%[####################################              ] 72.62%[####################################              ] 73.21%[####################################              ] 73.81%[#####################################             ] 74.40%[#####################################             ] 75.00%[#####################################             ] 75.60%[######################################            ] 76.19%[######################################            ] 76.79%[######################################            ] 77.38%[######################################            ] 77.98%[#######################################           ] 78.57%[#######################################           ] 79.17%[#######################################           ] 79.76%[########################################          ] 80.36%[########################################          ] 80.95%[########################################          ] 81.55%[#########################################         ] 82.14%[#########################################         ] 82.74%[#########################################         ] 83.33%[#########################################         ] 83.93%[##########################################        ] 84.52%[##########################################        ] 85.12%[##########################################        ] 85.71%[###########################################       ] 86.31%[###########################################       ] 86.90%[###########################################       ] 87.50%[############################################      ] 88.10%[############################################      ] 88.69%[############################################      ] 89.29%[############################################      ] 89.88%[#############################################     ] 90.48%[#############################################     ] 91.07%[#############################################     ] 91.67%[##############################################    ] 92.26%[##############################################    ] 92.86%[##############################################    ] 93.45%[###############################################   ] 94.05%[###############################################   ] 94.64%[###############################################   ] 95.24%[###############################################   ] 95.83%[################################################  ] 96.43%[################################################  ] 97.02%[################################################  ] 97.62%[################################################# ] 98.21%[################################################# ] 98.81%[################################################# ] 99.40%[##################################################] 100.00%
-Done in 2.68s
