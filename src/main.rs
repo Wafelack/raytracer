@@ -24,6 +24,16 @@ pub use texture::*;
 pub use utils::*;
 pub use vec3::*;
 
+fn earth() -> HittableList {
+    let earth_texture = Arc::new(ImageTexture::from("earthmap.jpg"));
+    let earth_surface = Arc::new(Lambertian::from_texture(earth_texture));
+    let globe = Arc::new(Sphere::new(point3::new(), 2., earth_surface));
+
+    let mut objects = HittableList::new();
+    objects.add(globe);
+    objects
+}
+
 fn two_perlin_spheres() -> HittableList {
     let mut objects = HittableList::new();
     let pertext = Arc::new(NoiseTexture::from(4.));
@@ -163,7 +173,7 @@ fn main() {
     let mut aperture: f32 = 0.1;
     let mut vfov = 40.;
 
-    let mode = 1;
+    let mode = 2;
 
     match mode {
         0 => {
@@ -174,6 +184,12 @@ fn main() {
         }
         1 => {
             world = two_perlin_spheres();
+            lookfrom = point3::from(13., 2., 3.);
+            lookat = point3::new(); // 0, 0 and 0
+            vfov = 20.;
+        }
+        2 => {
+            world = earth();
             lookfrom = point3::from(13., 2., 3.);
             lookat = point3::new(); // 0, 0 and 0
             vfov = 20.;
