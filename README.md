@@ -8,4 +8,12 @@ Simple raytracer written in Rust following [_Ray Tracing in One Weekend_](https:
 - Run `./raytracer > spheres.ppm`
 - open the ppm file produced with GIMP or any image viewer supporting PPM files
 
+## Demos
+
+### Random spheres
+
 Image produced : ![spheres demo](render/final_rendering.png)
+
+### Cornell box
+
+Image produced : ![cornell](render/cornell.png)
