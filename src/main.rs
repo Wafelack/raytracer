@@ -18,6 +18,7 @@ mod vec3;
 pub use aarect::*;
 pub use camera::Camera;
 pub use canvas::Canvas;
+pub use material::boxx::*;
 pub use material::material::*;
 pub use objects::{hittable_list::*, moving_sphere::*, sphere::*};
 pub use perlin::*;
@@ -59,6 +60,17 @@ fn cornell_box() -> HittableList {
         0.,
         555.,
         555.,
+        white.clone(),
+    )));
+
+    objects.add(Arc::new(Boxx::from(
+        &point3::from(130., 0., 65.),
+        &point3::from(295., 165., 230.),
+        white.clone(),
+    )));
+    objects.add(Arc::new(Boxx::from(
+        &point3::from(265., 0., 295.),
+        &point3::from(430., 330., 460.),
         white.clone(),
     )));
 
