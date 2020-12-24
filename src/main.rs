@@ -26,6 +26,45 @@ pub use texture::*;
 pub use utils::*;
 pub use vec3::*;
 
+fn cornell_box() -> HittableList {
+    let mut objects = HittableList::new();
+
+    let red = Arc::new(Lambertian::from(color::from(0.65, 0.05, 0.05)));
+    let white = Arc::new(Lambertian::from(color::from(0.73, 0.73, 0.73)));
+    let green = Arc::new(Lambertian::from(color::from(0.12, 0.45, 0.15)));
+    let light = Arc::new(DiffuseLight::from_color(color::from(30., 30., 30.)));
+
+    objects.add(Arc::new(YzRect::from(0., 555., 0., 555., 555., green)));
+    objects.add(Arc::new(YzRect::from(0., 555., 0., 555., 0., red)));
+    objects.add(Arc::new(XzRect::from(213., 343., 227., 332., 554., light)));
+    objects.add(Arc::new(XzRect::from(
+        0.,
+        555.,
+        0.,
+        555.,
+        0.,
+        white.clone(),
+    )));
+    objects.add(Arc::new(XzRect::from(
+        0.,
+        555.,
+        0.,
+        555.,
+        555.,
+        white.clone(),
+    )));
+    objects.add(Arc::new(XyRect::from(
+        0.,
+        555.,
+        0.,
+        555.,
+        555.,
+        white.clone(),
+    )));
+
+    objects
+}
+
 fn simple_light() -> HittableList {
     let mut objects = HittableList::new();
     let pertext = Arc::new(NoiseTexture::from(4.));
@@ -190,9 +229,9 @@ fn random_scene() -> HittableList {
 fn main() {
     let time = Instant::now(); // Time counter
                                // Image
-    const ASPECT_RATIO: f32 = 16.0 / 9.0;
-    const IMAGE_WIDTH: usize = 400;
-    const IMAGE_HEIGHT: usize = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as usize;
+    let mut aspect_ratio: f32 = 16.0 / 9.0;
+    let mut image_width: usize = 400;
+
     let mut samples_per_pixel: usize = 100;
     const MAX_DEPTH: usize = 50;
 
@@ -210,7 +249,7 @@ fn main() {
     let mut vfov = 40.;
     let mut background = color::new();
 
-    let mode = 5;
+    let mode = 6;
 
     match mode {
         0 => {
@@ -249,17 +288,29 @@ fn main() {
             lookat = point3::from(0., 2., 0.);
             vfov = 20.;
         }
+        6 => {
+            world = cornell_box();
+            aspect_ratio = 1.;
+            image_width = 600;
+            samples_per_pixel = 500;
+            background = color::new();
+            lookfrom = point3::from(278., 278., -800.);
+            lookat = point3::from(278., 278., 0.);
+            vfov = 40.;
+        }
         _ => {
             world = random_scene();
         }
     }
+
+    let image_height: usize = (image_width as f32 / aspect_ratio) as usize;
 
     let cam = Camera::new(
         lookfrom,
         lookat,
         vup,
         vfov,
-        ASPECT_RATIO,
+        aspect_ratio,
         aperture,
         dist_to_focus,
         0.,
@@ -269,8 +320,8 @@ fn main() {
     let render_pixel = |i, j| -> color {
         let mut pixel_color = color::new();
         for _ in 0..samples_per_pixel {
-            let u = (i as f32 + random_double(0., 1.)) / ((IMAGE_WIDTH - 1) as f32);
-            let v = (j as f32 + random_double(0., 1.)) / ((IMAGE_HEIGHT - 1) as f32);
+            let u = (i as f32 + random_double(0., 1.)) / ((image_width - 1) as f32);
+            let v = (j as f32 + random_double(0., 1.)) / ((image_height - 1) as f32);
             let r = cam.get_ray(u, v);
             pixel_color.add(ray_color(r, &background, &world, MAX_DEPTH as i32));
         }
@@ -279,8 +330,8 @@ fn main() {
 
     // Render
     let c = Canvas::from_fn_parallel_with_progress(
-        IMAGE_WIDTH as usize,
-        IMAGE_HEIGHT as usize,
+        image_width as usize,
+        image_height as usize,
         samples_per_pixel as usize,
         render_pixel,
         |total, num_done| {
