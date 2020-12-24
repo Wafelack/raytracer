@@ -12,8 +12,12 @@ Simple raytracer written in Rust following [_Ray Tracing in One Weekend_](https:
 
 ### Random spheres
 
-Image produced : ![spheres demo](render/final_rendering.png)
+Image produced: 
+
+![spheres demo](render/final_rendering.png)
 
 ### Cornell box
 
-Image produced : ![cornell](render/cornell.png)
+Image produced:
+
+![cornell](render/cornell.png)
