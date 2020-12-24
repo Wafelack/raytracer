@@ -1,7 +1,7 @@
 use crate::utils::random_double;
 use std::ops;
 
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, Default, Debug)]
 pub struct Vec3 {
     pub e: [f32; 3],
 }
