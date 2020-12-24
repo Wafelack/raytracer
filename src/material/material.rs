@@ -9,6 +9,9 @@ pub trait Material: Send + Sync {
         attenuation: &mut color,
         scattered: &mut Ray,
     ) -> bool;
+    fn emitted(&self, u: f32, v: f32, p: &point3) -> color {
+        color::new()
+    }
 }
 #[derive(Clone)]
 pub struct Lambertian {
@@ -128,4 +131,33 @@ fn reflectance(cosine: f32, ref_idx: f32) -> f32 {
     let mut r0 = (1. - ref_idx) / (1. + ref_idx);
     r0 = r0 * r0;
     r0 + (1. - r0) * (1. - cosine).powi(5)
+}
+
+pub struct DiffuseLight {
+    emit: Arc<dyn Texture>,
+}
+impl DiffuseLight {
+    pub fn from(a: Arc<dyn Texture>) -> Self {
+        Self { emit: a }
+    }
+    pub fn from_color(c: color) -> Self {
+        Self {
+            emit: Arc::new(SolidColor::from(c)),
+        }
+    }
+}
+
+impl Material for DiffuseLight {
+    fn scatter(
+        &self,
+        r_in: Ray,
+        rec: HitRecord,
+        attenuation: &mut color,
+        scattered: &mut Ray,
+    ) -> bool {
+        false
+    }
+    fn emitted(&self, u: f32, v: f32, p: &point3) -> color {
+        self.emit.value(u, v, p)
+    }
 }

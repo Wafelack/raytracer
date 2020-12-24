@@ -39,7 +39,9 @@ impl HitRecord<'_> {
 }
 
 pub trait Hittable: Send + Sync {
-    fn hit<'a>(&'a self, r: &Ray, t_min: f32, t_max: f32, rec: &mut HitRecord<'a>) -> bool;
+    fn hit<'a>(&'a self, r: &Ray, t_min: f32, t_max: f32, rec: &mut HitRecord<'a>) -> bool {
+        true
+    }
     fn bounding_box<'a>(&'a self, time0: f32, time1: f32, output_box: &mut Aabb) -> bool {
         true
     }

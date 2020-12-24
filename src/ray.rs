@@ -29,27 +29,26 @@ impl Ray {
     }
 }
 
-pub fn ray_color(r: Ray, world: &impl Hittable, depth: i32) -> color {
+pub fn ray_color(r: Ray, background: &color, world: &impl Hittable, depth: i32) -> color {
     let mut rec = HitRecord::void();
 
     if depth <= 0 {
         return color::new();
     }
 
-    if world.hit(&r, 0.001, f32::INFINITY, &mut rec) {
-        let mut scattered = Ray::new(point3::new(), Vec3::new(), 0.);
-        let mut attenuation = color::new();
-        if rec
-            .mat_ptr
-            .scatter(r, rec, &mut attenuation, &mut scattered)
-        {
-            return attenuation * ray_color(scattered, world, depth - 1);
-        }
-        return color::from(0., 0., 0.);
+    if !world.hit(&r, 0.001, f32::INFINITY, &mut rec) {
+        return *background;
     }
-    let unit_direction = unit_vector(r.direction());
+    let mut scattered = Ray::new(point3::new(), Vec3::new(), 0.);
+    let mut attenuation = color::new();
+    let emitted = rec.mat_ptr.emitted(rec.u, rec.v, &rec.p);
 
-    let t = (unit_direction.y() + 1.) * 0.5;
+    if !rec
+        .mat_ptr
+        .scatter(r, rec, &mut attenuation, &mut scattered)
+    {
+        return emitted;
+    }
 
-    color::from(1., 1., 1.) * (1. - t) + color::from(0.5, 0.7, 1.) * t
+    emitted + attenuation * ray_color(scattered, background, world, depth - 1)
 }
