@@ -304,7 +304,7 @@ fn main() {
             world = cornell_box();
             aspect_ratio = 1.;
             image_width = 600;
-            samples_per_pixel = 500;
+            samples_per_pixel = 10000;
             background = color::new();
             lookfrom = point3::from(278., 278., -800.);
             lookat = point3::from(278., 278., 0.);

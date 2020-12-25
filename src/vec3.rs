@@ -166,6 +166,12 @@ impl std::ops::Index<usize> for Vec3 {
     }
 }
 
+impl std::ops::IndexMut<usize> for Vec3 {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.e[index]
+    }
+}
+
 pub fn unit_vector(v: Vec3) -> Vec3 {
     v / v.len()
 }
