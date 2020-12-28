@@ -146,10 +146,29 @@ impl Hittable for RotateY {
         let mut direction = r.direction();
 
         origin[0] = self.cos_theta * r.origin()[0] - self.sin_theta * r.origin()[2];
-        origin[0] = self.sin_theta * r.origin()[0] + self.cos_theta * r.origin()[2];
+        origin[2] = self.sin_theta * r.origin()[0] + self.cos_theta * r.origin()[2];
 
         direction[0] = self.cos_theta * r.direction()[0] - self.sin_theta * r.direction()[2];
-        direction[0] = self.sin_theta * r.direction()[0] + self.cos_theta * r.direction()[2];
+        direction[2] = self.sin_theta * r.direction()[0] + self.cos_theta * r.direction()[2];
+
+        let rotated_r = Ray::new(origin, direction, r.time());
+
+        if !self.ptr.hit(&rotated_r, t_min, t_max, rec) {
+            return false;
+        }
+
+        let mut p = rec.p;
+        let mut normal = rec.normal;
+
+        p[0] = self.cos_theta * rec.p[0] + self.sin_theta * rec.p[2];
+        p[2] = -self.sin_theta * rec.p[0] + self.cos_theta * rec.p[2];
+
+        normal[0] = self.cos_theta * rec.normal[0] + self.sin_theta * rec.normal[2];
+        normal[2] = -self.sin_theta * rec.normal[0] + self.cos_theta * rec.normal[2];
+
+        rec.p = p;
+
+        rec.set_face_normal(rotated_r, normal);
 
         true
     }

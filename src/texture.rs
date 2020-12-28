@@ -167,3 +167,4 @@ impl Texture for ImageTexture {
     )
   }
 }
+
