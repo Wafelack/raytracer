@@ -14,6 +14,37 @@ pub trait Material: Send + Sync {
     }
 }
 #[derive(Clone)]
+pub struct Isotropic {
+    albedo: Arc<dyn Texture>,
+}
+
+impl Isotropic {
+    pub fn from_color(c: color) -> Self {
+        Self {
+            albedo: Arc::new(SolidColor::from(c)),
+        }
+    }
+    pub fn from_texture(a: Arc<dyn Texture>) -> Self {
+        Self { albedo: a }
+    }
+}
+
+impl Material for Isotropic {
+    fn scatter(
+        &self,
+        r_in: Ray,
+        rec: HitRecord,
+        attenuation: &mut color,
+        scattered: &mut Ray,
+    ) -> bool {
+        *scattered = Ray::new(rec.p, Vec3::random_in_unit_sphere(), r_in.time());
+        *attenuation = self.albedo.value(rec.u, rec.v, &rec.p);
+
+        true
+    }
+}
+
+#[derive(Clone)]
 pub struct Lambertian {
     pub albedo: Arc<dyn Texture>,
 }

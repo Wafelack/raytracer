@@ -7,6 +7,7 @@ mod bvh;
 mod camera;
 mod canvas;
 mod colors;
+mod constant_medium;
 mod material;
 mod objects;
 mod perlin;
@@ -18,6 +19,7 @@ mod vec3;
 pub use aarect::*;
 pub use camera::Camera;
 pub use canvas::Canvas;
+pub use constant_medium::*;
 pub use material::boxx::*;
 pub use material::material::*;
 pub use objects::{hittable::*, hittable_list::*, moving_sphere::*, sphere::*};
@@ -26,6 +28,73 @@ pub use ray::*;
 pub use texture::*;
 pub use utils::*;
 pub use vec3::*;
+
+fn cornell_smoke() -> HittableList {
+    let mut objects = HittableList::new();
+
+    let red = Arc::new(Lambertian::from(color::from(0.65, 0.05, 0.05)));
+    let white = Arc::new(Lambertian::from(color::from(0.73, 0.73, 0.73)));
+    let green = Arc::new(Lambertian::from(color::from(0.12, 0.45, 0.15)));
+    let light = Arc::new(DiffuseLight::from_color(color::from(30., 30., 30.)));
+
+    objects.add(Arc::new(YzRect::from(0., 555., 0., 555., 555., green)));
+    objects.add(Arc::new(YzRect::from(0., 555., 0., 555., 0., red)));
+    objects.add(Arc::new(XzRect::from(213., 343., 227., 332., 554., light)));
+    objects.add(Arc::new(XzRect::from(
+        0.,
+        555.,
+        0.,
+        555.,
+        0.,
+        white.clone(),
+    )));
+    objects.add(Arc::new(XzRect::from(
+        0.,
+        555.,
+        0.,
+        555.,
+        555.,
+        white.clone(),
+    )));
+    objects.add(Arc::new(XyRect::from(
+        0.,
+        555.,
+        0.,
+        555.,
+        555.,
+        white.clone(),
+    )));
+
+    let mut box1: Arc<dyn Hittable> = Arc::new(Boxx::from(
+        &point3::new(),
+        &point3::from(165., 330., 165.),
+        white.clone(),
+    ));
+
+    box1 = Arc::new(RotateY::from(box1, 15.));
+    box1 = Arc::new(Translate::from(box1, &Vec3::from(265., 0., 295.)));
+
+    let mut box2: Arc<dyn Hittable> = Arc::new(Boxx::from(
+        &point3::new(),
+        &point3::from(165., 165., 165.),
+        white.clone(),
+    ));
+    box2 = Arc::new(RotateY::from(box2, -18.));
+    box2 = Arc::new(Translate::from(box2, &Vec3::from(130., 0., 65.)));
+
+    objects.add(Arc::new(ConstantMedium::from_color(
+        box1,
+        0.01,
+        color::new(),
+    )));
+    objects.add(Arc::new(ConstantMedium::from_color(
+        box2,
+        0.01,
+        color::from(1., 1., 1.),
+    )));
+
+    objects
+}
 
 fn cornell_box() -> HittableList {
     let mut objects = HittableList::new();
@@ -269,7 +338,7 @@ fn main() {
     let mut vfov = 40.;
     let mut background = color::new();
 
-    let mode = 6;
+    let mode = 7;
 
     match mode {
         0 => {
@@ -314,6 +383,15 @@ fn main() {
             image_width = 600;
             samples_per_pixel = 10000;
             background = color::new();
+            lookfrom = point3::from(278., 278., -800.);
+            lookat = point3::from(278., 278., 0.);
+            vfov = 40.;
+        }
+        7 => {
+            world = cornell_smoke();
+            aspect_ratio = 1.;
+            image_width = 600;
+            samples_per_pixel = 200;
             lookfrom = point3::from(278., 278., -800.);
             lookat = point3::from(278., 278., 0.);
             vfov = 40.;
