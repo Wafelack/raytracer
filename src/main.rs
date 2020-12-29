@@ -17,6 +17,7 @@ mod utils;
 mod vec3;
 
 pub use aarect::*;
+pub use bvh::*;
 pub use camera::Camera;
 pub use canvas::Canvas;
 pub use constant_medium::*;
@@ -28,6 +29,127 @@ pub use ray::*;
 pub use texture::*;
 pub use utils::*;
 pub use vec3::*;
+
+fn final_scene() -> HittableList {
+    let mut objects = HittableList::new();
+    let mut boxes1 = HittableList::new();
+    let ground = Arc::new(Lambertian::from(color::from(0.48, 0.83, 0.53)));
+
+    let boxes_per_side = 20;
+
+    for i in 0..boxes_per_side {
+        for j in 0..boxes_per_side {
+            let w = 100.;
+            let x0 = -1000. + i as f32 * w as f32;
+            let z0 = -1000. + j as f32 * w as f32;
+            let y0 = 0.;
+            let x1 = x0 + w;
+            let y1 = random_double(1., 101.);
+            let z1 = z0 + w;
+
+            boxes1.add(Arc::new(Boxx::from(
+                &point3::from(x0, y0, z0),
+                &point3::from(x1, y1, z1),
+                ground.clone(),
+            )));
+        }
+    }
+
+    objects.add(Arc::new(BvhNode::from(&mut boxes1, 0., 1.)));
+    let light = Arc::new(DiffuseLight::from_color(color(7.)));
+    objects.add(Arc::new(XzRect::from(123., 423., 147., 412., 554., light)));
+
+    let center1 = point3::from(400., 400., 200.);
+    let center2 = center1 + Vec3::from(30., 0., 0.);
+    let moving_sphere_material = Arc::new(Lambertian::from(color::from(0.7, 0.3, 0.1)));
+
+    objects.add(Arc::new(MovingSphere::new(
+        center1,
+        center2,
+        0.,
+        1.,
+        50.,
+        moving_sphere_material,
+    )));
+
+    objects.add(Arc::new(Sphere::new(
+        point3::from(260., 150., 45.),
+        50.,
+        Arc::new(Dielectric::new(1.5)),
+    )));
+
+    objects.add(Arc::new(Sphere::new(
+        point3::from(0., 150., 145.),
+        50.,
+        Arc::new(Metal::from(color::from(0.8, 0.8, 0.9), 1.)),
+    )));
+
+    let mut boundary = Arc::new(Sphere::new(
+        point3::from(360., 150., 145.),
+        70.,
+        Arc::new(Dielectric::new(1.5)),
+    ));
+
+    objects.add(boundary.clone());
+    objects.add(Arc::new(ConstantMedium::from_color(
+        boundary.clone(),
+        0.2,
+        color::from(0.2, 0.4, 0.9),
+    )));
+
+    boundary = Arc::new(Sphere::new(
+        point3::new(),
+        5000.,
+        Arc::new(Dielectric::new(1.5)),
+    ));
+    objects.add(Arc::new(ConstantMedium::from_color(
+        boundary.clone(),
+        0.0001,
+        color(1.),
+    )));
+
+    let emat = Arc::new(Lambertian::from_texture(Arc::new(ImageTexture::from(
+        "earthmap.jpg",
+    ))));
+
+    objects.add(Arc::new(Sphere::new(
+        point3::from(400., 200., 400.),
+        100.,
+        emat.clone(),
+    )));
+
+    let pertext = Arc::new(NoiseTexture::from(0.1));
+    objects.add(Arc::new(Sphere::new(
+        point3::from(220., 280., 300.),
+        80.,
+        Arc::new(Lambertian::from_texture(pertext)),
+    )));
+
+    let mut boxes2 = HittableList::new();
+    let white = Arc::new(Lambertian::from(color(73.)));
+    let ns = 1000;
+    for j in 0..ns {
+        boxes2.add(Arc::new(Sphere::new(
+            point3::random(0., 165.),
+            10.,
+            white.clone(),
+        )))
+    }
+
+    objects.add(Arc::new(Translate::from(
+        Arc::new(RotateY::from(
+            Arc::new(BvhNode::from(&mut boxes2, 0., 1.)),
+            15.,
+        )),
+        &Vec3::from(-100., 270., 395.),
+    )));
+
+    objects
+}
+
+fn color(unique: f32) -> color {
+    color::from(unique, unique, unique)
+}
 
 fn cornell_smoke() -> HittableList {
     let mut objects = HittableList::new();
@@ -338,7 +460,7 @@ fn main() {
     let mut vfov = 40.;
     let mut background = color::new();
 
-    let mode = 7;
+    let mode = 8;
 
     match mode {
         0 => {
@@ -393,6 +515,16 @@ fn main() {
             image_width = 600;
             samples_per_pixel = 200;
             lookfrom = point3::from(278., 278., -800.);
+            lookat = point3::from(278., 278., 0.);
+            vfov = 40.;
+        }
+        8 => {
+            world = final_scene();
+            aspect_ratio = 1.;
+            image_width = 800;
+            samples_per_pixel = 200;
+            background = color::new();
+            lookfrom = point3::from(478., 278., -600.);
             lookat = point3::from(278., 278., 0.);
             vfov = 40.;
         }
