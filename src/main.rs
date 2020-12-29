@@ -20,7 +20,7 @@ pub use camera::Camera;
 pub use canvas::Canvas;
 pub use material::boxx::*;
 pub use material::material::*;
-pub use objects::{hittable_list::*, moving_sphere::*, sphere::*};
+pub use objects::{hittable::*, hittable_list::*, moving_sphere::*, sphere::*};
 pub use perlin::*;
 pub use ray::*;
 pub use texture::*;
@@ -63,16 +63,24 @@ fn cornell_box() -> HittableList {
         white.clone(),
     )));
 
-    objects.add(Arc::new(Boxx::from(
-        &point3::from(130., 0., 65.),
-        &point3::from(295., 165., 230.),
+    let mut box1: Arc<dyn Hittable> = Arc::new(Boxx::from(
+        &point3::new(),
+        &point3::from(165., 330., 165.),
         white.clone(),
-    )));
-    objects.add(Arc::new(Boxx::from(
-        &point3::from(265., 0., 295.),
-        &point3::from(430., 330., 460.),
+    ));
+
+    box1 = Arc::new(RotateY::from(box1, 15.));
+    box1 = Arc::new(Translate::from(box1, &Vec3::from(265., 0., 295.)));
+    objects.add(box1);
+
+    let mut box2: Arc<dyn Hittable> = Arc::new(Boxx::from(
+        &point3::new(),
+        &point3::from(165., 165., 165.),
         white.clone(),
-    )));
+    ));
+    box2 = Arc::new(RotateY::from(box2, -18.));
+    box2 = Arc::new(Translate::from(box2, &Vec3::from(130., 0., 65.)));
+    objects.add(box2);
 
     objects
 }
@@ -367,11 +375,11 @@ fn get_bar(percentage: f32) -> String {
     let mut toret = String::from("[");
 
     for _ in 0..to_color {
-        toret.push('#');
+        toret.push('*');
     }
 
     for _ in 0..(50 - to_color) {
-        toret.push(' ');
+        toret.push('.');
     }
     toret.push(']');
 
