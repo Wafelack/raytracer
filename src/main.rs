@@ -453,7 +453,7 @@ fn get_bar(percentage: f32) -> String {
     let mut toret = String::from("[");
 
     for _ in 0..to_color {
-        toret.push('*');
+        toret.push('#');
     }
 
     for _ in 0..(50 - to_color) {
