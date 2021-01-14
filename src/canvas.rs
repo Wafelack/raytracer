@@ -5,6 +5,8 @@ use rayon::prelude::*;
 use std::io::stdout;
 use std::io::Write;
 
+use std::sync::{Mutex , Condvar , Arc , atomic::{Ordering , AtomicUsize}};
+
 pub struct Canvas {
     pixels: Box<[color]>,
     samples_per_pixel: usize,
@@ -12,10 +14,13 @@ pub struct Canvas {
     ysize: usize,
 }
 
+const UPDATE_INTEVAL: usize = 1024;
+
 #[inline]
 fn index_to_xy(xsize: usize , index: usize) -> (usize , usize){
     (index % xsize , index / xsize)
 }
+
 
 impl Canvas {
     pub fn from_fn<F>(x: usize, y: usize, samples_per_pixel: usize, mut f: F) -> Self
@@ -56,25 +61,37 @@ impl Canvas {
         /* first arg: total number of pixels
          *  second arg: number of pixels compleated
          */
-        P: FnMut(usize, usize),
+        P: FnMut(usize, usize) + Send + 'static,
     {
         let size = x.checked_mul(y).unwrap();
         let mut pixels = Vec::with_capacity(size);
+        let notify = Arc::new((Mutex::new(()) , Condvar::new() , AtomicUsize::new(0_usize)));
+        let nt = Arc::clone(&notify);
+        let notify_thread = std::thread::spawn(move ||{
+            let (lock , cvar , counter) = &*nt;
+            let mut lock = lock.lock().unwrap();
+            let mut num_pixels_processed = 0;
+            while num_pixels_processed < size{
+                progress(size , num_pixels_processed);
+                lock = cvar.wait(lock).unwrap();
+                let add = counter.swap(0 , Ordering::Relaxed);
+                if add == std::usize::MAX{
+                    progress(size , size);
+                    break;
+                }
+                num_pixels_processed += add;
+            }
+        });
         pixels.par_extend((0..size).into_par_iter().map(|idx| {
             let (x , y) = index_to_xy(x , idx);
+            if notify.2.fetch_add(1 , Ordering::Relaxed) >= UPDATE_INTEVAL{
+                notify.1.notify_one();
+            } 
             func(x , y)
         }));
-        /*
-
-        let mut pixels = (vec![color::default(); size]).into_boxed_slice();
-        for (y_idx, yline) in pixels.chunks_mut(x).enumerate() {
-            assert_eq!(yline.len(), x);
-            yline.par_iter_mut().zip(0..x).for_each(|(px, x)| {
-                *px = func(x, y_idx);
-            });
-            progress(size, (y_idx + 1) * x);
-        }
-        */
+        notify.2.store(std::usize::MAX , Ordering::SeqCst);
+        notify.1.notify_one();
+        notify_thread.join().unwrap();
         Self {
             samples_per_pixel,
             pixels: pixels.into_boxed_slice(),
