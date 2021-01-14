@@ -12,6 +12,11 @@ pub struct Canvas {
     ysize: usize,
 }
 
+#[inline]
+fn index_to_xy(xsize: usize , index: usize) -> (usize , usize){
+    (index % xsize , index / xsize)
+}
+
 impl Canvas {
     pub fn from_fn<F>(x: usize, y: usize, samples_per_pixel: usize, mut f: F) -> Self
     where
@@ -54,6 +59,13 @@ impl Canvas {
         P: FnMut(usize, usize),
     {
         let size = x.checked_mul(y).unwrap();
+        let mut pixels = Vec::with_capacity(size);
+        pixels.par_extend((0..size).into_par_iter().map(|idx| {
+            let (x , y) = index_to_xy(x , idx);
+            func(x , y)
+        }));
+        /*
+
         let mut pixels = (vec![color::default(); size]).into_boxed_slice();
         for (y_idx, yline) in pixels.chunks_mut(x).enumerate() {
             assert_eq!(yline.len(), x);
@@ -62,9 +74,10 @@ impl Canvas {
             });
             progress(size, (y_idx + 1) * x);
         }
+        */
         Self {
             samples_per_pixel,
-            pixels,
+            pixels: pixels.into_boxed_slice(),
             xsize: x,
             ysize: y,
         }
