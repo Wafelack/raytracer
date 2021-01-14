@@ -557,6 +557,7 @@ fn main() {
         }
         pixel_color
     };
+    let mut bar = String::with_capacity(52);
 
     // Render
     let c = Canvas::from_fn_parallel_with_progress(
@@ -564,12 +565,12 @@ fn main() {
         image_height as usize,
         samples_per_pixel as usize,
         render_pixel,
-        |total, num_done| {
+        move |total, num_done| {
             let percentage = ((num_done as f32 / total as f32) * 100.).min(100.);
-            let bar = get_bar(percentage);
+            format_bar(&mut bar , percentage);
             eprint!(
-                "\r{} {:.2}%",
-                bar,
+                "\r{:?} {:.2}%",
+                bar.as_str(),
                 ((num_done as f32 / total as f32) * 100.).min(100.)
             );
         },
@@ -580,18 +581,12 @@ fn main() {
     eprint!("\nDone in {:.2}s\n", elapsed.as_secs_f32());
 }
 
-fn get_bar(percentage: f32) -> String {
+
+fn format_bar(bar: &mut String , percentage: f32){
+    bar.clear();
     let to_color = (percentage / 2.).floor() as i32;
-    let mut toret = String::from("[");
-
-    for _ in 0..to_color {
-        toret.push('#');
-    }
-
-    for _ in 0..(50 - to_color) {
-        toret.push('.');
-    }
-    toret.push(']');
-
-    toret
+    bar.push('[');
+    bar.extend((0..to_color).map(|_| '#'));
+    bar.extend((0..(50 - to_color)).map(|_| '.'));
+    bar.push(']');
 }
