@@ -441,7 +441,7 @@ fn main() {
     let time = Instant::now(); // Time counter
                                // Image
     let mut aspect_ratio: f32 = 16.0 / 9.0;
-    let mut image_width: usize = 100;
+    let mut image_width: usize = 400;
 
     let mut samples_per_pixel: usize = 100;
     const MAX_DEPTH: usize = 50;
